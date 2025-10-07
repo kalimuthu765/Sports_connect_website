@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Match Stats - SportsConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/match-stat.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="dashboard.html" class="navbar-brand">SportsConnect</a>
+    <div class="navbar-links">
+        <a href="profile.html">Profile</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+</nav>
+
+<div class="container match-stat-container">
+    <a href="#" onclick="history.back()" class="back-link">&larr; Go Back</a>
+    <div class="header">
+        <h1>Add Match Stats</h1>
+        <p>Record your performance to track your progress and improve your game.</p>
+    </div>
+    
+    <div class="card stat-form-card">
+        <form id="statsForm">
+            <div class="form-group">
+                <label for="matchDate">Match Date</label>
+                <input type="date" id="matchDate" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="opponent">Opponent's Team/Name</label>
+                <input type="text" id="opponent" placeholder="E.g., Warriors FC" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="sport">Select Sport</label>
+                <select id="sport" required>
+                    <option value="" disabled selected>Select Sport</option>
+                    <option value="Cricket">Cricket</option>
+                    <option value="Football">Football</option>
+                    <option value="Basketball">Basketball</option>
+                    <option value="Tennis">Tennis</option>
+                    <option value="Volleyball">Volleyball</option>
+                    <option value="Kabaddi">Kabaddi</option>
+                    <option value="Hockey">Hockey</option>
+                    <option value="Badminton">Badminton</option>
+                    <option value="Baseball">Baseball</option>
+                    <option value="Table Tennis">Table Tennis</option>
+                </select>
+            </div>
+            
+            <div id="dynamic-stats-fields-wrapper" class="scroll-box">
+                <div id="dynamic-stats-fields">
+                    </div>
+            </div>
+            
+            <button type="submit" class="btn submit-btn">Save Stats</button>
+        </form>
+    </div>
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "index.html";
+
+function logout() {
+  localStorage.removeItem("token");
+  window.location.href = "index.html";
+}
+
+const sportStats = {
+    'Cricket': {
+        roles: ['Batter', 'Bowler', 'All-rounder', 'Wicket-keeper'],
+        stats: {
+            'Batter': ['Runs', 'Balls Faced', '4s', '6s','Catches','Run Outs'],
+            'Bowler': ['Wickets', 'Overs', 'Maidens', 'Runs Conceded','Catches','Run Outs'],
+            'All-rounder': ['Runs','Balls Faced', '4s', '6s', 'Wickets','Overs', 'Maidens', 'Runs Conceded', 'Catches','Run Outs'],
+            'Wicket-keeper': ['Runs','Balls Faced', '4s', '6s','Catches', 'Stumpings', 'Run Outs']
+        }
+    },
+    'Football': {
+        roles: ['Forward', 'Midfielder', 'Defender', 'Goalkeeper'],
+        stats: {
+            'Forward': ['Goals', 'Assists', 'Shots on Target'],
+            'Midfielder': ['Assists', 'Tackles', 'Passes Completed'],
+            'Defender': ['Tackles', 'Interceptions', 'Clearances'],
+            'Goalkeeper': ['Saves', 'Clean Sheets']
+        }
+    },
+    'Basketball': {
+        roles: ['Guard', 'Forward', 'Center'],
+        stats: {
+            'Guard': ['Points', 'Assists', 'Steals'],
+            'Forward': ['Points', 'Rebounds', 'Blocks'],
+            'Center': ['Rebounds', 'Blocks', 'Points']
+        }
+    },
+    'Tennis': {
+        stats: ['Aces', 'Double Faults', 'Winners', 'Unforced Errors']
+    },
+    'Volleyball': {
+        stats: ['Kills', 'Blocks', 'Digs', 'Aces']
+    },
+    'Kabaddi': {
+        stats: ['Successful Raids', 'Successful Tackles', 'Points']
+    },
+    'Hockey': {
+        stats: ['Goals', 'Assists', 'Shots']
+    },
+    'Badminton': {
+        stats: ['Points Won', 'Smashes', 'Drops']
+    },
+    'Baseball': {
+        stats: ['Runs', 'Hits', 'Home Runs', 'Stolen Bases']
+    },
+    'Table Tennis': {
+        stats: ['Points Won', 'Serves Won', 'Returns Won']
+    }
+};
+
+document.getElementById('sport').addEventListener('change', function() {
+    const selectedSport = this.value;
+    const dynamicFieldsContainer = document.getElementById('dynamic-stats-fields');
+    dynamicFieldsContainer.innerHTML = '';
+    
+    if (sportStats[selectedSport] && sportStats[selectedSport].roles) {
+        dynamicFieldsContainer.innerHTML += `
+            <div class="form-group">
+                <label for="playerRole">Your Role</label>
+                <select id="playerRole" required>
+                    <option value="">Select a Role</option>
+                    ${sportStats[selectedSport].roles.map(role => `<option value="${role}">${role}</option>`).join('')}
+                </select>
+            </div>
+            <div id="role-stats-fields"></div>
+        `;
+        document.getElementById('playerRole').addEventListener('change', function() {
+            const selectedRole = this.value;
+            const roleStatsContainer = document.getElementById('role-stats-fields');
+            roleStatsContainer.innerHTML = '';
+            
+            const statsToDisplay = sportStats[selectedSport].stats[selectedRole] || [];
+            
+            statsToDisplay.forEach(stat => {
+                const inputId = stat.toLowerCase().replace(/\s/g, ''); 
+                roleStatsContainer.innerHTML += `
+                    <div class="form-group">
+                        <label for="${inputId}">${stat}</label>
+                        <input type="number" id="${inputId}" placeholder="${stat}" min="0">
+                    </div>
+                `;
+            });
+        });
+    } else if (sportStats[selectedSport] && sportStats[selectedSport].stats) {
+        const statsToDisplay = sportStats[selectedSport].stats;
+        statsToDisplay.forEach(stat => {
+            const inputId = stat.toLowerCase().replace(/\s/g, '');
+            dynamicFieldsContainer.innerHTML += `
+                <div class="form-group">
+                    <label for="${inputId}">${stat}</label>
+                    <input type="number" id="${inputId}" placeholder="${stat}" min="0">
+                </div>
+            `;
+        });
+    }
+});
+
+document.getElementById("statsForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const matchDate = document.getElementById("matchDate").value;
+  const opponent = document.getElementById("opponent").value;
+  const sport = document.getElementById("sport").value;
+  
+  const stats = {};
+  const selectedSportData = sportStats[sport];
+  let statsToCollect = [];
+
+  if (selectedSportData.roles) {
+      const selectedRole = document.getElementById('playerRole').value;
+      if (selectedRole) {
+          statsToCollect = selectedSportData.stats[selectedRole] || [];
+      }
+  } else {
+      statsToCollect = selectedSportData.stats || [];
+  }
+
+  statsToCollect.forEach(stat => {
+      const inputId = stat.toLowerCase().replace(/\s/g, '');
+      const value = document.getElementById(inputId).value;
+      if (value) {
+          stats[stat.toLowerCase().replace(/\s/g, '_')] = parseInt(value, 10);
+      }
+  });
+
+  const res = await fetch("http://localhost:5000/api/users/me/stats", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+    body: JSON.stringify({ matchDate, opponent, sport, stats })
+  });
+
+  if (res.ok) {
+    alert("Stats saved successfully!");
+    window.location.href = "profile.html";
+  } else {
+    alert("Failed to save stats.");
+  }
+});
+</script>
+</body>
+</html>

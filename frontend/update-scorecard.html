@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Scorecard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/update-scorecard.css">
+</head>
+<body>
+
+<div class="scorecard-container">
+    <div class="header">
+        <h1 id="match-title">Update Scorecard</h1>
+        <p id="match-info"></p>
+    </div>
+
+    <div class="card scorecard-form-card">
+        <form id="scoreUpdateForm">
+            <input type="hidden" id="matchIdInput">
+            <input type="hidden" id="tournamentIdInput">
+            <input type="hidden" id="tournamentSport">
+            
+            <div id="scorecard-fields-container">
+                <p>Loading form...</p>
+            </div>
+            
+            <div class="form-group status-group">
+                <label for="statusInput">Match Status</label>
+                <select id="statusInput" required>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn submit-btn">Save Scorecard</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    if (!token) { window.close(); }
+
+    // --- Sport-Specific Form Definitions ---
+    const sportScorecardForms = {
+        'Cricket': (teams, matchScorecard) => {
+            const t1 = teams[0], t2 = teams[1];
+            const sc1 = matchScorecard?.scorecard?.team1 || {};
+            const sc2 = matchScorecard?.scorecard?.team2 || {};
+            return `
+                <div class="team-input-group">
+                    <h4 class="team-header">${t1}</h4>
+                    <div class="form-group">
+                        <label for="team1Runs">Runs</label>
+                        <input type="number" id="team1Runs" value="${sc1.runs || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label for="team1Wickets">Wickets</label>
+                        <input type="number" id="team1Wickets" value="${sc1.wickets || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label for="team1Overs">Overs</label>
+                        <input type="text" id="team1Overs" value="${sc1.overs || ''}" placeholder="e.g., 20.3">
+                    </div>
+                </div>
+
+                <div class="team-input-group">
+                    <h4 class="team-header">${t2}</h4>
+                    <div class="form-group">
+                        <label for="team2Runs">Runs</label>
+                        <input type="number" id="team2Runs" value="${sc2.runs || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label for="team2Wickets">Wickets</label>
+                        <input type="number" id="team2Wickets" value="${sc2.wickets || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label for="team2Overs">Overs</label>
+                        <input type="text" id="team2Overs" value="${sc2.overs || ''}" placeholder="e.g., 18.5">
+                    </div>
+                </div>
+            `;
+        },
+        'Football': (teams, matchScorecard) => {
+            const t1 = teams[0], t2 = teams[1];
+            const sc1 = matchScorecard?.scorecard?.team1 || {};
+            const sc2 = matchScorecard?.scorecard?.team2 || {};
+            return `
+                <div class="team-input-group">
+                    <h4 class="team-header">${t1}</h4>
+                    <div class="form-group">
+                        <label for="team1Goals">Goals</label>
+                        <input type="number" id="team1Goals" placeholder="e.g., 2" value="${sc1.goals || ''}" required>
+                    </div>
+                </div>
+
+                <div class="team-input-group">
+                    <h4 class="team-header">${t2}</h4>
+                    <div class="form-group">
+                        <label for="team2Goals">Goals</label>
+                        <input type="number" id="team2Goals" placeholder="e.g., 1" value="${sc2.goals || ''}" required>
+                    </div>
+                </div>
+            `;
+        }
+    };
+    // --- End Sport-Specific Form Definitions ---
+
+    async function apiRequest(url, options = {}) {
+        const res = await fetch(`http://localhost:5000${url}`, {
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, ...options
+        });
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({ message: 'An unknown error occurred' }));
+            throw new Error(errorData.message || 'API request failed');
+        }
+        return res.json();
+    }
+
+    async function loadScorecardForm() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tournamentId = urlParams.get('tournamentId');
+        const matchId = urlParams.get('matchId');
+        const sport = urlParams.get('sport');
+        const teamNames = urlParams.get('teams').split(',');
+
+        if (!tournamentId || !matchId || !sport) {
+            document.getElementById('scorecard-fields-container').innerHTML = '<p class="error">Invalid match data provided.</p>';
+            return;
+        }
+
+        try {
+            const tournamentData = await apiRequest(`/api/tournaments/${tournamentId}`);
+            const match = tournamentData.matches.find(m => m._id === matchId);
+
+            if (!match) {
+                throw new Error('Match not found in tournament data.');
+            }
+            
+            document.getElementById('matchIdInput').value = matchId;
+            document.getElementById('tournamentIdInput').value = tournamentId;
+            document.getElementById('tournamentSport').value = sport;
+            document.getElementById('match-title').textContent = `Update Scorecard for ${match.matchName}`;
+            document.getElementById('match-info').textContent = `${teamNames[0]} vs ${teamNames[1]} (${sport})`;
+            document.getElementById('statusInput').value = match.status;
+            
+            if (sportScorecardForms[sport]) {
+                document.getElementById('scorecard-fields-container').innerHTML = sportScorecardForms[sport](teamNames, match);
+            } else {
+                document.getElementById('scorecard-fields-container').innerHTML = `<p>Scorecard template for ${sport} is not yet available.</p>`;
+            }
+
+        } catch (error) {
+            document.getElementById('scorecard-fields-container').innerHTML = `<p class="error">Error loading match: ${error.message}</p>`;
+        }
+    }
+
+    document.getElementById('scoreUpdateForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const tournamentId = document.getElementById('tournamentIdInput').value;
+        const matchId = document.getElementById('matchIdInput').value;
+        const newStatus = document.getElementById('statusInput').value;
+        const tournamentSport = document.getElementById('tournamentSport').value;
+        const teamNames = document.getElementById('match-info').textContent.split(' (')[0].split(' vs ');
+        
+        let newScorecard = {};
+
+        try {
+            if (tournamentSport === 'Cricket') {
+                newScorecard = { 
+                    team1: { 
+                        name: teamNames[0],
+                        runs: parseInt(document.getElementById('team1Runs').value),
+                        wickets: parseInt(document.getElementById('team1Wickets').value),
+                        overs: parseFloat(document.getElementById('team1Overs').value)
+                    },
+                    team2: { 
+                        name: teamNames[1],
+                        runs: parseInt(document.getElementById('team2Runs').value),
+                        wickets: parseInt(document.getElementById('team2Wickets').value),
+                        overs: parseFloat(document.getElementById('team2Overs').value)
+                    }
+                };
+            } else if (tournamentSport === 'Football') {
+                newScorecard = { 
+                    team1: { 
+                        name: teamNames[0],
+                        goals: parseInt(document.getElementById('team1Goals').value)
+                    },
+                    team2: { 
+                        name: teamNames[1],
+                        goals: parseInt(document.getElementById('team2Goals').value)
+                    }
+                };
+            }
+            // Add more sport-specific logic here
+
+            await apiRequest(`/api/tournaments/${tournamentId}/matches/${matchId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ scorecard: newScorecard, status: newStatus })
+            });
+            alert('Scorecard updated successfully!');
+            window.close(); // Close the window on success
+        } catch (error) {
+            alert('Failed to save scorecard. Check input format and try again: ' + error.message);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadScorecardForm);
+</script>
+
+</body>
+</html>

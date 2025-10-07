@@ -1,0 +1,104 @@
+/* find-team.css */
+
+/* --- General Container and Typography --- */
+.find-team-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    color: #e0e0e0;
+}
+
+.find-team-container .header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.find-team-container .header h1 {
+    font-size: 2.5em;
+    color: #00b894;
+    margin-bottom: 10px;
+}
+
+.find-team-container .header p {
+    font-size: 1.1em;
+    color: #a0a0a0;
+}
+
+/* --- Team List Styles --- */
+.team-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.team-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2a2a2a;
+    border: 1px solid #383838;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.team-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.team-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.team-name {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #fff;
+}
+
+.team-sport {
+    font-size: 0.9em;
+    color: #a0a0a0;
+}
+
+/* --- Button Styles (reusing from style.css) --- */
+.btn {
+    background-color: #00b894;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #009975;
+}
+
+/* --- Empty State and Error Messages --- */
+.no-teams, .error-message {
+    text-align: center;
+    color: #a0a0a0;
+    font-style: italic;
+    padding: 40px;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 600px) {
+    .team-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .btn {
+        width: 100%;
+    }
+}

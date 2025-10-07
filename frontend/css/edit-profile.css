@@ -1,0 +1,103 @@
+/* edit-profile.css */
+
+/* --- General Page Layout --- */
+.edit-profile-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.edit-profile-container .header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #e0e0e0;
+}
+
+.edit-profile-container .header h1 {
+    font-size: 2.5em;
+    color: #00b894;
+    margin-bottom: 10px;
+}
+
+.edit-profile-container .header p {
+    font-size: 1.1em;
+    color: #a0a0a0;
+}
+
+/* --- Card & Form Styling --- */
+.profile-form-card {
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #fff;
+    font-size: 1em;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #383838;
+    border-radius: 6px;
+    background-color: #2a2a2a;
+    color: #fff;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #00b894;
+    box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.2);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #777;
+}
+
+.submit-btn {
+    width: 100%;
+    font-size: 1.1em;
+    padding: 15px;
+    background-color: #00b894;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #009975;
+}
+
+/* --- Responsive adjustments for smaller screens --- */
+@media (max-width: 600px) {
+    .edit-profile-container {
+        padding: 0 15px;
+    }
+    .profile-form-card {
+        padding: 20px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select,
+    .submit-btn {
+        font-size: 0.9em;
+    }
+}

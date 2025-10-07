@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - SportsConnect</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('image_s.jpg') no-repeat center center/cover;
+    }
+
+    .auth-container {
+      background: rgba(30, 30, 30, 0.95);
+      padding: 40px 30px;
+      border-radius: 12px;
+      width: 350px;
+      box-shadow: 0px 6px 20px rgba(0,0,0,0.5);
+      color: #fff;
+      text-align: center;
+    }
+
+    .auth-container img.logo {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+
+    .auth-container h2 {
+      margin-bottom: 20px;
+      font-size: 28px;
+      color: #fff;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    input {
+      background: #444;
+      color: #fff;
+    }
+
+    select {
+      background: #444;
+      color: #fff;
+    }
+
+    input::placeholder {
+      color: #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .toggle-text, .forgot {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .toggle-text span, .forgot span {
+      color: #007bff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .social-login {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .social-login div {
+      background: #555;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <img src="sports-palt.png" alt="SportsConnect Logo" class="logo"> <h2>SportsConnect</h2>
+
+    <div id="login-form">
+      <input type="text" id="login-email" placeholder="Username or E-mail" required>
+      <input type="password" id="login-password" placeholder="Password" required>
+      <button onclick="login()">Sign In</button>
+
+      <div class="forgot">
+        <span onclick="alert('Forgot Password clicked')">Forgot Password?</span>
+      </div>
+
+      <div class="toggle-text">
+        Don't have an account? <span onclick="showSignup()">Sign Up</span>
+      </div>
+    </div> <div id="signup-form" class="hidden">
+      <h2>Sign Up</h2>
+      <input type="text" id="signup-name" placeholder="Full Name" required>
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="password" id="signup-password" placeholder="Password" required>
+      <select id="signup-role">
+        <option value="player">Player</option>
+        <option value="team">Team/Club</option>
+      </select>
+      <select id="signup-sport" style="display:none;">
+        <option value="" disabled selected>Select Your Sport</option>
+        <option value="Football">Football</option>
+        <option value="Basketball">Basketball</option>
+        <option value="Cricket">Cricket</option>
+        <option value="Tennis">Tennis</option>
+        <option value="Volleyball">Volleyball</option>
+        <option value="Kabaddi">Kabaddi</option>
+        <option value="Hockey">Hockey</option>
+        <option value="Badminton">Badminton</option>
+      </select>
+      <select id="signup-cricket-role" style="display:none;">
+        <option value="" disabled selected>Select Your Role</option>
+        <option value="Batter">Batter</option>
+        <option value="Bowler">Bowler</option>
+        <option value="All-rounder">All-rounder</option>
+        <option value="Wicket-keeper">Wicket-keeper</option>
+      </select>
+      <button onclick="signup()">Sign Up</button>
+
+      <div class="toggle-text">
+        Already have an account? <span onclick="showLogin()">Login</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000/api/auth";
+
+    const signupRoleSelect = document.getElementById("signup-role");
+    const signupSportSelect = document.getElementById("signup-sport");
+    const signupCricketRoleSelect = document.getElementById("signup-cricket-role");
+
+    signupRoleSelect.addEventListener('change', () => {
+      if (signupRoleSelect.value === 'player') {
+        signupSportSelect.style.display = 'block';
+      } else {
+        signupSportSelect.style.display = 'none';
+        signupCricketRoleSelect.style.display = 'none';
+      }
+    });
+
+    signupSportSelect.addEventListener('change', () => {
+      if (signupSportSelect.value === 'Cricket') {
+        signupCricketRoleSelect.style.display = 'block';
+      } else {
+        signupCricketRoleSelect.style.display = 'none';
+      }
+    });
+
+    function showSignup(){
+      document.getElementById("login-form").classList.add("hidden");
+      document.getElementById("signup-form").classList.remove("hidden");
+    }
+
+    function showLogin(){
+      document.getElementById("signup-form").classList.add("hidden");
+      document.getElementById("login-form").classList.remove("hidden");
+    }
+
+    async function login(){
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      const res = await fetch(`${API_URL}/login`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+      if(data.token){
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.user._id);
+        alert("Login successful!");
+        window.location.href="dashboard.html";
+      } else {
+        alert(data.message || "Login failed!");
+      }
+    }
+
+    async function signup(){
+      const name = document.getElementById("signup-name").value;
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+      const role = document.getElementById("signup-role").value;
+      const sport = role === 'player' ? document.getElementById("signup-sport").value : null;
+      const cricketRole = sport === 'Cricket' ? document.getElementById("signup-cricket-role").value : null;
+      
+      const payload = { name, email, password, role, sport, cricketRole };
+      if (role === 'team') delete payload.sport;
+
+      const res = await fetch(`${API_URL}/signup`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if(data.token){
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.user._id);
+        alert("Signup successful!");
+        window.location.href="dashboard.html";
+      } else {
+        alert(data.message || "Signup failed!");
+      }
+    }
+  </script>
+</body>
+</html>

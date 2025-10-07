@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Post - SportsConnect</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="dashboard.html" class="navbar-brand">SportsConnect</a>
+  <div class="navbar-links">
+    <a href="profile.html">Profile</a>
+    <a href="post.html">Create Post</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+    <a href="#" onclick="history.back()" class="back-link">&larr; Go Back</a>
+    <div class="card auth-container">
+        <h2>Create a New Post</h2>
+        <form id="postForm">
+            <textarea id="caption" placeholder="What's on your mind?" required></textarea>
+            <input type="text" id="media" placeholder="Image or Video URL (optional)">
+            <button type="submit" class="btn">Post</button>
+        </form>
+    </div>
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "index.html";
+
+function logout() {
+  localStorage.removeItem("token");
+  window.location.href = "index.html";
+}
+
+document.getElementById("postForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const caption = document.getElementById("caption").value;
+  const media = document.getElementById("media").value ? [document.getElementById("media").value] : [];
+
+  const res = await fetch("http://localhost:5000/api/posts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+    body: JSON.stringify({ caption, media })
+  });
+  
+  if (res.ok) {
+    alert("Post created successfully!");
+    window.location.href = "dashboard.html";
+  } else {
+    alert("Failed to create post.");
+  }
+});
+</script>
+</body>
+</html>

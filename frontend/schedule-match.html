@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Match - SportsConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/schedule-match.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="dashboard.html" class="navbar-brand">SportsConnect</a>
+    <div class="navbar-links">
+        <a href="profile.html">Profile</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+</nav>
+
+<div class="container schedule-match-container">
+    <a id="back-link" href="#" class="back-link">&larr; Go Back</a>
+    <div class="header">
+        <h1>Schedule a New Match</h1>
+        <p>Fill out the details below to schedule a match for this tournament.</p>
+    </div>
+
+    <div class="card match-form-card">
+        <form id="scheduleMatchForm">
+            <div class="form-group">
+                <label for="matchName">Match Name</label>
+                <input type="text" id="matchName" placeholder="E.g., Final Match" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="datetime-local" id="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" placeholder="E.g., City Stadium" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Select Teams</label>
+                <div class="team-selection-grid" id="teams-grid">
+                    </div>
+            </div>
+
+            <button type="submit" class="btn submit-btn">Schedule Match</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "index.html";
+    }
+
+    async function apiRequest(url, options = {}) {
+        const res = await fetch(`http://localhost:5000${url}`, {
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, ...options
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message);
+        }
+        return res.json();
+    }
+
+    async function loadTeamsForScheduling() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tournamentId = urlParams.get('id');
+
+        try {
+            const tournament = await apiRequest(`/api/tournaments/${tournamentId}`);
+            const teams = tournament.teams.filter(t => t.status === 'approved');
+            const teamsGrid = document.getElementById('teams-grid');
+            
+            teamsGrid.innerHTML = teams.map(team => `
+                <div class="team-checkbox">
+                    <input type="checkbox" name="teams" value="${team.team._id}" id="team-${team.team._id}">
+                    <label for="team-${team.team._id}">${team.team.name}</label>
+                </div>
+            `).join('');
+
+        } catch (error) {
+            alert(`Error loading teams: ${error.message}`);
+        }
+    }
+
+    document.getElementById('scheduleMatchForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const urlParams = new URLSearchParams(window.location.search);
+        const tournamentId = urlParams.get('id');
+        
+        const matchName = document.getElementById('matchName').value;
+        const date = document.getElementById('date').value;
+        const location = document.getElementById('location').value;
+        const teamsCheckboxes = document.querySelectorAll('input[name="teams"]:checked');
+        const selectedTeams = Array.from(teamsCheckboxes).map(cb => cb.value);
+
+        if (selectedTeams.length !== 2) {
+            alert('Please select exactly two teams.');
+            return;
+        }
+
+        const payload = {
+            matchName,
+            date,
+            location,
+            teams: selectedTeams
+        };
+
+        try {
+            await apiRequest(`/api/tournaments/${tournamentId}/matches`, { method: 'POST', body: JSON.stringify(payload) });
+            alert('Match scheduled successfully!');
+            window.location.href = `tournament-details.html?id=${tournamentId}`;
+        } catch (error) {
+            alert('Failed to schedule match: ' + error.message);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tournamentId = urlParams.get('id');
+        document.getElementById('back-link').href = `tournament-details.html?id=${tournamentId}`;
+        loadTeamsForScheduling();
+    });
+</script>
+
+</body>
+</html>

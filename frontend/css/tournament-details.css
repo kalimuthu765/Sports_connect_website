@@ -1,0 +1,210 @@
+/* tournament-details.css */
+
+/* --- General Layout --- */
+.tournament-details-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+/* --- Header and Info --- */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #e0e0e0;
+}
+
+.header h1 {
+    font-size: 2.5em;
+    color: #00b894;
+    margin-bottom: 5px;
+}
+
+.header p {
+    font-size: 1.1em;
+    color: #a0a0a0;
+}
+
+/* --- Cards --- */
+.card {
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    padding: 25px;
+    margin-bottom: 20px;
+    color: #e0e0e0;
+}
+
+.card h2 {
+    font-size: 1.8em;
+    color: #00b894;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    font-size: 1.4em;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+/* --- Registration Section --- */
+.registration-card {
+    text-align: center;
+}
+
+.register-btn {
+    padding: 12px 24px;
+    font-size: 1.2em;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.register-btn:hover {
+    background-color: #0056b3;
+}
+
+.status-message {
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.status-pending { background-color: #ffc107; color: #333; }
+.status-approved { background-color: #28a745; color: #fff; }
+.status-rejected { background-color: #dc3545; color: #fff; }
+
+/* --- Team Lists --- */
+.team-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.team-list li {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.team-list li:hover {
+    background-color: #333;
+}
+
+.team-list p {
+    margin: 0;
+    color: #a0a0a0;
+}
+
+.pending-item .actions .btn {
+    font-size: 0.9em;
+    padding: 6px 12px;
+    margin-left: 5px;
+    border-radius: 4px;
+}
+
+.approve-btn { background-color: #28a745; }
+.reject-btn { background-color: #dc3545; }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 600px) {
+    .tournament-details-container {
+        padding: 0 15px;
+    }
+    .card {
+        padding: 15px;
+    }
+    .header h1 {
+        font-size: 2em;
+    }
+    .team-list li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* tournament-details.css */
+/* ... (existing styles) ... */
+
+.matches-card {
+    margin-top: 20px;
+}
+
+#matches-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.match-item {
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #383838;
+}
+
+.match-details p {
+    margin: 5px 0;
+    color: #ccc;
+}
+
+.match-details strong {
+    color: #fff;
+}
+/* tournament-details.css */
+/* ... (existing styles) ... */
+
+/* Modal Styles */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1001; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.7); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    color: #fff;
+    padding: 30px;
+    border: 1px solid #383838;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.close-btn {
+    color: #a0a0a0;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #fff;
+    text-decoration: none;
+}

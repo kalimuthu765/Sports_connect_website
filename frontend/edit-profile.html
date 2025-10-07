@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - SportsConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/edit-profile.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="dashboard.html" class="navbar-brand">SportsConnect</a>
+    <div class="navbar-links">
+        <a href="profile.html">Profile</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+</nav>
+
+<div class="container edit-profile-container">
+    <a href="profile.html" class="back-link">&larr; Go Back</a>
+    <div class="header">
+        <h1>Edit Profile</h1>
+        <p>Update your personal information and sport details.</p>
+    </div>
+
+    <div class="card profile-form-card">
+        <form id="profileForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" placeholder="Tell us about yourself..." rows="4"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="avatar">Profile Picture URL</label>
+                <input type="url" id="avatar" placeholder="Paste image URL here">
+            </div>
+
+            <div id="player-fields" style="display:none;">
+                <div class="form-group">
+                    <label for="sport">Sport</label>
+                    <select id="sport">
+                        <option value="" disabled selected>Select Your Sport</option>
+                        <option value="Football">Football</option>
+                        <option value="Basketball">Basketball</option>
+                        <option value="Cricket">Cricket</option>
+                        <option value="Tennis">Tennis</option>
+                        <option value="Volleyball">Volleyball</option>
+                        <option value="Kabaddi">Kabaddi</option>
+                        <option value="Hockey">Hockey</option>
+                        <option value="Badminton">Badminton</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cricketRole">Cricket Role</label>
+                    <select id="cricketRole" style="display:none;">
+                        <option value="" disabled selected>Select Your Role</option>
+                        <option value="Batter">Batter</option>
+                        <option value="Bowler">Bowler</option>
+                        <option value="All-rounder">All-rounder</option>
+                        <option value="Wicket-keeper">Wicket-keeper</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn submit-btn">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "index.html";
+    }
+
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+        const options = {
+            method,
+            headers: { 'Authorization': 'Bearer ' + token }
+        };
+        if (body) {
+            options.headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(body);
+        }
+        const response = await fetch(`http://localhost:5000${endpoint}`, options);
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
+            throw new Error(errorData.message || 'API request failed');
+        }
+        return response.status === 204 ? null : response.json();
+    }
+    
+    // Define the sport-specific roles
+    const sportRoles = {
+        'Cricket': ['Batter', 'Bowler', 'All-rounder', 'Wicket-keeper']
+    };
+
+    async function loadProfileForEdit() {
+        try {
+            const user = await apiRequest('/api/users/me');
+            
+            document.getElementById('name').value = user.name || '';
+            document.getElementById('bio').value = user.bio || '';
+            document.getElementById('avatar').value = user.avatar || '';
+
+            if (user.role === 'player') {
+                document.getElementById('player-fields').style.display = 'block';
+                const sportSelect = document.getElementById('sport');
+                const cricketRoleSelect = document.getElementById('cricketRole');
+                
+                if (user.sport) {
+                    sportSelect.value = user.sport;
+                    if (user.sport === 'Cricket') {
+                        cricketRoleSelect.style.display = 'block';
+                        cricketRoleSelect.value = user.cricketRole || '';
+                    }
+                }
+
+                sportSelect.addEventListener('change', () => {
+                    if (sportSelect.value === 'Cricket') {
+                        cricketRoleSelect.style.display = 'block';
+                    } else {
+                        cricketRoleSelect.style.display = 'none';
+                    }
+                });
+            }
+
+        } catch (error) {
+            alert('Could not load profile data: ' + error.message);
+            window.location.href = 'profile.html';
+        }
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value;
+        const bio = document.getElementById('bio').value;
+        const avatar = document.getElementById('avatar').value;
+
+        const sportSelect = document.getElementById('sport');
+        const cricketRoleSelect = document.getElementById('cricketRole');
+        
+        const sport = sportSelect?.value || null;
+        const cricketRole = (sport === 'Cricket') ? cricketRoleSelect?.value || null : null;
+        
+        const payload = {
+            name,
+            bio,
+            avatar,
+            sport,
+            cricketRole
+        };
+
+        try {
+            const updatedUser = await apiRequest('/api/users/me', 'PUT', payload);
+            alert('Profile updated successfully!');
+            window.location.href = 'profile.html';
+        } catch (error) {
+            alert('Failed to update profile: ' + error.message);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadProfileForEdit);
+</script>
+
+</body>
+</html>

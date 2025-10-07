@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - SportsConnect</title>
+<style>
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #000;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    color: #000; 
+}
+
+/* Navbar */
+.navbar {
+    background: #111;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid #00b4d8; 
+}
+.navbar-brand {
+    font-size: 28px;
+    font-weight: bold;
+    color: #00b4d8;
+    text-decoration: none;
+}
+.navbar a {
+    text-decoration: none;
+    color: #fff;
+    margin: 0 12px;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+.navbar a:hover { color: #90e0ef; }
+
+/* Main Layout Container */
+.container {
+    display: flex;
+    max-width: 1400px;
+    margin: 20px auto;
+    gap: 20px;
+    padding: 0 15px;
+}
+main { flex: 2; }
+aside { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+
+/* --- DASHBOARD PROFILE HEADER STYLES --- */
+#dashboard-profile-header {
+    background-color: #E0F7FA; 
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: #333;
+}
+.dash-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 3px solid #00b4d8;
+}
+.dash-info {
+    flex-grow: 1;
+}
+.dash-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.8em;
+    color: #000;
+}
+.dash-info p {
+    margin: 0;
+    color: #555;
+}
+.dash-stats {
+    display: flex;
+    gap: 25px;
+    text-align: center;
+}
+.dash-stat-item strong {
+    display: block;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.dash-stat-item span {
+    font-size: 0.9em;
+    color: #555;
+}
+
+/* Card Styles & Previous Colors */
+.card {
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    opacity: 0;
+    animation: fadeIn 0.8s forwards;
+    color: #000;
+}
+.card h3, .card h2 { color: #333; }
+
+/* Specific card colors from previous theme */
+#team-info-card { background: #E8F5E9; }
+main .card { background: #FFECB3; }
+aside:last-of-type .card:first-of-type { background: #E1F5FE; }
+aside:last-of-type .card:last-of-type { background: #F3E5F5; }
+
+
+/* MODAL STYLES */
+.post-modal {
+    display: none; position: fixed; z-index: 101;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    justify-content: center; align-items: center;
+}
+.post-modal-content {
+    background-color: #fefefe; padding: 25px; border-radius: 12px;
+    width: 90%; max-width: 500px; position: relative;
+}
+.post-modal-content textarea {
+    width: calc(100% - 20px); padding: 10px; margin-bottom: 15px;
+    border: 1px solid #ddd; border-radius: 8px; min-height: 120px;
+}
+.post-modal-actions { display: flex; justify-content: flex-end; }
+.close-button {
+    color: #aaa; position: absolute; top: 10px; right: 20px;
+    font-size: 28px; font-weight: bold; cursor: pointer;
+}
+
+/* Button Styles */
+.btn {
+    background: #00b4d8; color: #fff; border: none; padding: 10px 20px;
+    border-radius: 8px; cursor: pointer; font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+.btn:hover { background: #0077b6; transform: translateY(-2px); }
+.btn-sm { padding: 6px 12px; font-size: 0.9em; }
+
+/* --- SOCIAL FEED & SCROLLBAR STYLES --- */
+#feed {
+    max-height: 70vh; 
+    overflow-y: auto; 
+    padding-right: 10px; 
+}
+/* Custom Scrollbar for Webkit browsers (Chrome, Safari) */
+#feed::-webkit-scrollbar {
+    width: 8px;
+}
+#feed::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+#feed::-webkit-scrollbar-thumb {
+    background: #00b4d8; 
+    border-radius: 10px;
+}
+#feed::-webkit-scrollbar-thumb:hover {
+    background: #0077b6; 
+}
+
+.post {
+    background: #f5f5f5; padding: 15px; margin-bottom: 12px;
+    border-radius: 10px;
+}
+.post-header { font-weight: bold; margin-bottom: 6px; color: #003049; }
+
+/* Sidebar Item Lists */
+.item-list { list-style: none; padding: 0; margin: 0; }
+.item-list li {
+    padding: 5px; margin-bottom: 10px; display: flex;
+    justify-content: space-between; align-items: center;
+    background: #e9ecef; border-radius: 8px;
+}
+.item-list a {
+    text-decoration: none; color: #0077b6; font-weight: bold;
+    padding: 8px 12px; display: block; width: 100%;
+}
+.item-list .user-role { color: #6c757d; font-size: 0.85em; font-weight: normal; }
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .container { flex-direction: column; }
+    #dashboard-profile-header { flex-direction: column; text-align: center; }
+    .dash-stats { justify-content: space-around; width: 100%; margin-top: 15px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="dashboard.html" class="navbar-brand">SportsConnect</a>
+    <div class="navbar-links">
+        <a href="create-tournament.html" id="create-tournament-link" style="display: none;">Create Tournament</a>
+        <button class="btn" onclick="openPostModal()">Start a Post</button>
+        <a href="profile.html">Profile</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+</nav>
+
+<div id="postModal" class="post-modal">
+    <div class="post-modal-content">
+        <span class="close-button" onclick="closePostModal()">&times;</span>
+        <h3>Create New Post</h3>
+        <textarea id="modal-post-caption" placeholder="What's on your mind?"></textarea>
+        <div class="post-modal-actions">
+            <button class="btn" onclick="createPostFromModal()">Post</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <aside>
+        <div id="dashboard-profile-header">
+             <p style="width: 100%; text-align: center;">Loading profile...</p>
+        </div>
+        
+        <div class="card" id="team-info-card">
+        </div>
+        <div class="card" id="team-requests-card" style="display:none;">
+            <h3>Join Requests</h3>
+            <ul id="join-requests-list" class="item-list"></ul>
+        </div>
+    </aside>
+
+    <main>
+        <div class="card">
+            <h2>Social Feed</h2>
+            <div id="feed"><p>Loading feed...</p></div>
+        </div>
+    </main>
+
+    <aside>
+        <div class="card">
+            <h3>Live Tournaments</h3>
+            <ul class="item-list" id="tournaments-list"><p>Loading tournaments...</p></ul>
+        </div>
+        <div class="card">
+            <h3>Recommended</h3>
+            <ul class="item-list" id="recommended-list">
+                <p>Loading recommendations...</p>
+            </ul>
+        </div>
+    </aside>
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+const userId = localStorage.getItem("userId");
+if (!token || !userId) {
+    window.location.href = "index.html";
+}
+
+function logout(){
+    localStorage.clear();
+    window.location.href="index.html";
+}
+
+async function apiRequest(endpoint, method = 'GET', body = null) {
+    const options = {
+        method,
+        headers: { 'Authorization': 'Bearer ' + token }
+    };
+    if (body) {
+        options.headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(body);
+    }
+    const response = await fetch(`http://localhost:5000${endpoint}`, options);
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
+        throw new Error(errorData.message || 'API request failed');
+    }
+    return response.status === 204 ? null : response.json();
+}
+
+async function loadProfile() {
+    try {
+        const user = await apiRequest('/api/users/me');
+        const profileHeader = document.getElementById('dashboard-profile-header');
+
+        const avatarSrc = user.avatar && user.avatar.trim() !== "" 
+            ? user.avatar 
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=80&background=00b4d8&color=fff&bold=true`;
+
+        profileHeader.innerHTML = `
+            <img src="${avatarSrc}" alt="Profile" class="dash-avatar">
+            <div class="dash-info">
+                <h3>${user.name}</h3>
+                <p>${user.bio || (user.role === 'team' ? 'Team/Club' : 'Player')}</p>
+            </div>
+            <div class="dash-stats">
+                <div class="dash-stat-item">
+                    <strong>${user.posts?.length || 0}</strong>
+                    <span>Posts</span>
+                </div>
+                <div class="dash-stat-item">
+                    <strong>${user.followers?.length || 0}</strong>
+                    <span>Followers</span>
+                </div>
+                <div class="dash-stat-item">
+                    <strong>${user.following?.length || 0}</strong>
+                    <span>Following</span>
+                </div>
+            </div>
+        `;
+        profileHeader.style.opacity = 1;
+
+        if (user.role === 'team') {
+            document.getElementById('create-tournament-link').style.display = 'inline';
+            loadTeamJoinRequests();
+        }
+
+        loadRoleSpecificInfo(user);
+    } catch (error) {
+        console.error('Failed to load profile:', error);
+        document.getElementById('dashboard-profile-header').innerHTML = '<p>Could not load profile.</p>';
+    }
+}
+
+async function loadRoleSpecificInfo(user) {
+    const infoCard = document.getElementById('team-info-card');
+    if (user.role === 'team') {
+        infoCard.innerHTML = '<h3>Our Players</h3><ul class="item-list" id="player-list">Loading...</ul>';
+        const players = await apiRequest(`/api/users/${user._id}/players`).catch(() => []);
+        const playerList = document.getElementById('player-list');
+        playerList.innerHTML = players.length > 0 ? players.map(p => `<li><a href="profile.html?id=${p._id}">${p.name}</a></li>`).join('') : '<p>No players on this team yet.</p>';
+    } else if (user.role === 'player') {
+        infoCard.innerHTML = `<h3>My Team</h3><div id="player-team-status">Loading...</div>`;
+        const statusDiv = document.getElementById('player-team-status');
+        if (user.team) {
+            statusDiv.innerHTML = `<ul class="item-list"><li><a href="profile.html?id=${user.team._id}">${user.team.name}</a></li></ul>`;
+        } else {
+            const teamRequest = user.joinRequests?.find(r => r.player.toString() === userId);
+            if (teamRequest) {
+                statusDiv.innerHTML = `<p>Your request to join a team is **${teamRequest.status}**.</p>`;
+            } else {
+                statusDiv.innerHTML = `<button class="btn" onclick="findTeam()">Find a Team</button>`;
+            }
+        }
+    }
+}
+
+async function loadFeed() {
+    try {
+        const posts = await apiRequest('/api/posts/feed');
+        const feedDiv = document.getElementById('feed');
+        feedDiv.innerHTML = posts.length > 0 ? posts.map(p => `
+            <div class="post">
+                <div class="post-header">${p.user.name}</div>
+                <p>${p.caption}</p>
+            </div>
+        `).join('') : '<p>Your feed is empty. Follow others to see their posts!</p>';
+    } catch (error) {
+        document.getElementById('feed').innerHTML = '<p>Could not load feed.</p>';
+    }
+}
+
+function openPostModal() { document.getElementById('postModal').style.display = 'flex'; }
+function closePostModal() { document.getElementById('postModal').style.display = 'none'; }
+async function createPostFromModal() {
+    const caption = document.getElementById('modal-post-caption').value.trim();
+    if (!caption) return alert('Post cannot be empty.');
+    try {
+        await apiRequest('/api/posts', 'POST', { caption });
+        closePostModal();
+        loadFeed();
+        loadProfile(); 
+    } catch (error) {
+        alert('Failed to create post: ' + error.message);
+    }
+}
+
+async function loadTournaments() {
+    try {
+        const tournaments = await apiRequest('/api/tournaments');
+        const list = document.getElementById('tournaments-list');
+        list.innerHTML = tournaments.length > 0 ? tournaments.map(t => `
+            <li><a href="tournament-details.html?id=${t._id}">${t.name}</a></li>
+        `).join('') : '<p>No tournaments available.</p>';
+    } catch(error) {
+        document.getElementById('tournaments-list').innerHTML = '<p>Could not load tournaments.</p>';
+    }
+}
+
+async function followUser(userIdToFollow, buttonElement) {
+    try {
+        buttonElement.disabled = true;
+        await apiRequest(`/api/users/${userIdToFollow}/follow`, 'POST');
+        buttonElement.textContent = 'Following';
+    } catch (error) {
+        alert('Could not follow user. Please try again.');
+        buttonElement.disabled = false;
+    }
+}
+
+async function loadRecommendations() {
+    try {
+        const recommendations = await apiRequest('/api/users/recommendations');
+        const list = document.getElementById('recommended-list');
+        if (!recommendations || recommendations.length === 0) {
+            list.innerHTML = '<p>No one to recommend right now.</p>';
+            return;
+        }
+        list.innerHTML = recommendations.map(user => `
+            <li>
+                <div>
+                    <a href="profile.html?id=${user._id}">
+                        ${user.name} <span class="user-role">(${user.role})</span>
+                    </a>
+                </div>
+                <div>
+                    <button class="btn btn-sm" onclick="followUser('${user._id}', this)">Follow</button>
+                </div>
+            </li>
+        `).join('');
+    } catch (error) {
+        document.getElementById('recommended-list').innerHTML = '<p>Could not load recommendations.</p>';
+    }
+}
+
+async function loadTeamJoinRequests() {
+    try {
+        const me = await apiRequest('/api/users/me');
+        const requests = me.joinRequests.filter(req => req.status === 'pending');
+        const requestsList = document.getElementById('join-requests-list');
+        
+        if (requests.length > 0) {
+            document.getElementById('team-requests-card').style.display = 'block';
+            requestsList.innerHTML = requests.map(req => `
+                <li>
+                    <span>${req.player.name}</span>
+                    <div>
+                        <button class="btn btn-sm" onclick="manageJoinRequest('${req._id}', 'approved')">Approve</button>
+                        <button class="btn btn-sm" onclick="manageJoinRequest('${req._id}', 'rejected')">Reject</button>
+                    </div>
+                </li>
+            `).join('');
+        } else {
+            document.getElementById('team-requests-card').style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Failed to load join requests:', error);
+    }
+}
+
+async function manageJoinRequest(requestId, status) {
+    try {
+        await apiRequest(`/api/users/manage-join-request/${requestId}`, 'PUT', { status });
+        alert(`Request ${status} successfully.`);
+        loadTeamJoinRequests();
+    } catch (error) {
+        alert('Failed to manage request: ' + error.message);
+    }
+}
+
+async function findTeam() {
+    window.location.href = 'find-team.html'; 
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadProfile();
+    loadFeed();
+    loadTournaments();
+    loadRecommendations();
+});
+</script>
+</body>
+</html>

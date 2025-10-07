@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SportsConnect</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Basic styling for the hero section */
+    .hero {
+      text-align: center;
+      padding: 80px 20px;
+      background: #f4f7f6;
+    }
+    .hero-title {
+      font-size: 3rem;
+      color: #007bff;
+      margin: 0;
+    }
+    .hero-subtitle span {
+      color: #0056b3;
+      font-weight: bold;
+    }
+    .feature-container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 40px 20px;
+    }
+    .feature-card {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 300px;
+    }
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="#" class="navbar-brand">SportsConnect</a>
+    <div class="navbar-links">
+      <a href="#">Home</a>
+      <a href="#">Features</a>
+      <a href="#">About</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1 class="hero-title">SportsConnect</h1>
+    <p class="hero-subtitle">Everything You Need to <span>Excel in Sports</span></p>
+    <p class="hero-desc">
+      From individual performance tracking to team management and tournament organization,<br>
+      we’ve got every aspect of your sports journey covered.
+    </p>
+  </section>
+
+  <section class="feature-container">
+    <div class="feature-card">
+      <div class="feature-icon">👤</div>
+      <h2>Player Profiles</h2>
+      <p>Create comprehensive profiles with stats, achievements, and AI-powered ratings.</p>
+      <button onclick="goToLogin('player')" class="btn">Enter as Player</button>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <h2>Team Management</h2>
+      <p>Register teams, manage rosters, and showcase your club’s achievements and tournaments.</p>
+      <button onclick="goToLogin('team')" class="btn">Enter as Team</button>
+    </div>
+  </section>
+
+  <script>
+    function goToLogin(role) {
+      // Corrected syntax using backticks for template literal
+      window.location.href = `login.html?role=${role}`;
+    }
+  </script>
+</body>
+</html>

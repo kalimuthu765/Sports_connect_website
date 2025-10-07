@@ -1,0 +1,117 @@
+/* update-scorecard.css */
+
+/* Use the main project variables for consistency */
+:root {
+    --primary-color: #00b894;
+    --background-color: #121212;
+    --card-background: #1a1a1a;
+    --text-primary: #f0f0f0;
+    --text-secondary: #a0a0a0;
+    --border-color: #383838;
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary);
+    padding: 20px;
+}
+
+.scorecard-container {
+    max-width: 550px;
+    margin: 0 auto;
+}
+
+/* --- Header --- */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.header h1 {
+    color: var(--primary-color);
+    font-size: 1.8em;
+    margin-bottom: 5px;
+}
+
+.header p {
+    color: var(--text-secondary);
+    font-size: 0.9em;
+}
+
+/* --- Card & Form --- */
+.scorecard-form-card {
+    background: var(--card-background);
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    font-size: 1em;
+}
+
+/* --- Team Sections --- */
+#scorecard-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.team-input-group {
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.team-header {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+/* Style for the JSON Textarea inputs to look professional */
+.player-stats-form label {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+
+/* Make JSON input slightly recessed */
+.player-stats-form textarea {
+    background-color: #0b0b0b;
+    border-color: #444;
+}
+
+/* --- Status and Button --- */
+.status-group {
+    padding-top: 15px;
+    border-top: 1px dashed var(--border-color);
+}
+
+.submit-btn {
+    margin-top: 20px;
+    width: 100%;
+}

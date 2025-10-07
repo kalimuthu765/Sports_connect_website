@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find a Team - SportsConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/find-team.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="dashboard.html" class="navbar-brand">SportsConnect</a>
+    <div class="navbar-links">
+        <a href="profile.html">Profile</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+</nav>
+
+<div class="container find-team-container">
+    <a href="dashboard.html" class="back-link">&larr; Go Back</a>
+    <div class="header">
+        <h1>Find a Team to Join</h1>
+        <p>Browse through teams and send a request to join a club that's right for you.</p>
+    </div>
+
+    <div id="teams-list-container" class="card">
+        <p>Loading teams...</p>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "index.html";
+    }
+
+    async function fetchTeams() {
+        try {
+            const res = await fetch('http://localhost:5000/api/users/teams/find', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+            if (!res.ok) {
+                throw new Error('Failed to fetch teams.');
+            }
+            const teams = await res.json();
+            const container = document.getElementById('teams-list-container');
+            
+            if (teams.length > 0) {
+                container.innerHTML = `<ul id="teams-list" class="team-list"></ul>`;
+                const list = document.getElementById('teams-list');
+                list.innerHTML = teams.map(team => `
+                    <li class="team-item">
+                        <div class="team-info">
+                            <span class="team-name">${team.name}</span>
+                            <span class="team-sport">${team.sport || 'N/A'}</span>
+                        </div>
+                        <button class="btn btn-sm" onclick="joinTeam('${team._id}')">Request to Join</button>
+                    </li>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="no-teams">No teams available right now. Check back later!</p>';
+            }
+
+        } catch (error) {
+            document.getElementById('teams-list-container').innerHTML = `<p class="error-message">Error: ${error.message}</p>`;
+        }
+    }
+
+    async function joinTeam(teamId) {
+        try {
+            const res = await fetch(`http://localhost:5000/api/users/join-team/${teamId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await res.json();
+            alert(data.message);
+            if (res.ok) {
+                window.location.href = 'dashboard.html';
+            }
+        } catch (error) {
+            alert('Failed to send join request: ' + error.message);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchTeams);
+</script>
+
+</body>
+</html>

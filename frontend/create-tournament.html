@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Tournament - SportsConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="navbar">
+    <a href="dashboard.html" class="navbar-brand">SportsConnect</a>
+    <div class="navbar-links">
+        <a href="profile.html">Profile</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+</nav>
+
+<div class="container auth-container">
+    <h2>Create a New Tournament</h2>
+    <form id="tournamentForm">
+        <label for="name">Tournament Name</label>
+        <input type="text" id="name" placeholder="E.g., Summer Cricket League" required>
+
+        <label for="sport">Sport</label>
+        <select id="sport" required>
+            <option value="" disabled selected>Select Tournament Sport</option>
+            <option value="Football">Football</option>
+            <option value="Basketball">Basketball</option>
+            <option value="Cricket">Cricket</option>
+            <option value="Tennis">Tennis</option>
+            <option value="Volleyball">Volleyball</option>
+            <option value="Kabaddi">Kabaddi</option>
+            <option value="Hockey">Hockey</option>
+            <option value="Badminton">Badminton</option>
+        </select>
+
+        <button type="submit" class="btn">Create Tournament</button>
+    </form>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "index.html";
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "index.html";
+    }
+
+    document.getElementById('tournamentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('name').value;
+        const sport = document.getElementById('sport').value;
+
+        try {
+            const res = await fetch('http://localhost:5000/api/tournaments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ name, sport })
+            });
+
+            if (res.ok) {
+                alert('Tournament created successfully!');
+                window.location.href = 'dashboard.html';
+            } else {
+                const err = await res.json();
+                alert('Error: ' + err.message);
+            }
+        } catch (error) {
+            alert('An error occurred. Please try again.');
+        }
+    });
+</script>
+</body>
+</html>

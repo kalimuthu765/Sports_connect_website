@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - SportsConnect</title>
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+    <div class="container">
+        <a href="dashboard.html" class="back-link">&larr;</a>
+        
+        <div class="card" id="profile-container">
+            <p style="padding: 40px; text-align: center;">Loading profile...</p>
+        </div>
+    </div>
+
+<script>
+    const token = localStorage.getItem("token");
+    const currentUserId = localStorage.getItem("userId");
+    if (!token) window.location.href = "index.html";
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const profileId = urlParams.get('id') || currentUserId;
+
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+        const options = { method, headers: { 'Authorization': 'Bearer ' + token } };
+        if (body) {
+            options.headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(body);
+        }
+        const response = await fetch(`http://localhost:5000${endpoint}`, options);
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
+            throw new Error(errorData.message || 'API request failed');
+        }
+        return response.status === 204 ? null : response.json();
+    }
+    
+    async function loadProfile() {
+        try {
+            const endpoint = (profileId === currentUserId) ? '/api/users/me' : `/api/users/${profileId}`;
+            const user = await apiRequest(endpoint);
+            if (user) {
+                renderProfile(user);
+            } else {
+                throw new Error("User data not found.");
+            }
+        } catch (error) {
+            document.getElementById('profile-container').innerHTML = `<p style="padding: 20px; color: #ff6b6b; text-align: center;">Could not load profile: ${error.message}</p>`;
+        }
+    }
+
+    function renderProfile(user) {
+        const container = document.getElementById('profile-container');
+        const isOwnProfile = user._id === currentUserId;
+
+        const avatarSrc = user.avatar && user.avatar.trim() !== "" 
+            ? user.avatar 
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=160&background=0d6efd&color=fff&bold=true`;
+        
+        const bannerSrc = user.banner && user.banner.trim() !== "" 
+            ? user.banner 
+            : "https://source.unsplash.com/1600x400/?dark,stadium";
+        
+        const isFollowing = user.followers?.includes(currentUserId);
+
+        let actionButtonHTML = isOwnProfile 
+            ? `
+                <a href="edit-profile.html" class="btn">Edit Profile</a>
+                <button class="btn" onclick="window.location.href='match-stat.html'">Add Stats</button>
+              `
+            : `<button class="btn" onclick="followUser('${user._id}')" ${isFollowing ? 'disabled' : ''}>${isFollowing ? 'Following' : 'Follow'}</button>`;
+
+        let tabsHTML = `<button class="tab-btn active" onclick="showTab(event, 'posts')">Posts</button>`;
+        let tabPanesHTML = `<div id="posts-content" class="tab-pane active">${renderPosts(user.posts)}</div>`;
+
+        if (user.role === 'player') {
+            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'stats')">Match Stats</button>`;
+            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'overall')">Overall Stats</button>`;
+            tabsHTML += user.team ? `<button class="tab-btn" onclick="showTab(event, 'team')">My Team</button>` : '';
+            tabPanesHTML += `<div id="stats-content" class="tab-pane">${renderStats(user.stats)}</div>`;
+            tabPanesHTML += `<div id="overall-content" class="tab-pane">${renderOverallStats(user.stats)}</div>`;
+            tabPanesHTML += user.team ? `<div id="team-content" class="tab-pane">${renderTeam(user.team)}</div>` : '';
+        }
+        if (user.role === 'team' && isOwnProfile) {
+            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'roster')">Roster</button>`;
+            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'requests')">Join Requests</button>`;
+            tabPanesHTML += `<div id="roster-content" class="tab-pane">${renderRoster(user.roster)}</div>`;
+            tabPanesHTML += `<div id="requests-content" class="tab-pane">${renderRequests(user.joinRequests)}</div>`;
+        }
+
+        container.innerHTML = `
+            <div class="profile-header">
+                <div class="profile-header-banner" style="background-image: url('${bannerSrc}')"></div>
+                <div class="profile-header-actions">${actionButtonHTML}</div>
+                
+                <div class="profile-main-content">
+                    <div class="profile-avatar-info-group">
+                        <img src="${avatarSrc}" alt="Avatar" class="profile-avatar">
+                        <div class="profile-info">
+                            <h1>${user.name}</h1>
+                            <p>${user.bio || 'A passionate sports enthusiast.'}</p>
+                            ${user.sport ? `<p><strong>Sport:</strong> ${user.sport}</p>` : ''}
+                            ${user.cricketRole ? `<p><strong>Role:</strong> ${user.cricketRole}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="stats-bar">
+                        <div class="stat-item">
+                            <strong>${user.posts?.length || 0}</strong>
+                            <span>Posts</span>
+                        </div>
+                        <div class="stat-item">
+                            <strong>${user.followers?.length || 0}</strong>
+                            <span>Followers</span>
+                        </div>
+                        <div class="stat-item">
+                            <strong>${user.following?.length || 0}</strong>
+                            <span>Following</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-nav">
+                <nav class="tabs">${tabsHTML}</nav>
+            </div>
+            
+            <div class="tab-content">${tabPanesHTML}</div>
+        `;
+    }
+    
+    function renderPosts(posts) {
+        if (!posts?.length) return `<p style='text-align: center; color: var(--text-secondary);'>No posts yet.</p>`;
+        return `<div class="posts-scroll-box">${posts.map(p => {
+            const postAuthor = (p.user._id === currentUserId) ? 'My Post' : `Posted by <a href="profile.html?id=${p.user._id}">${p.user.name}</a>`;
+            return `<div class="post-item">
+                        <div class="post-header">${postAuthor}</div>
+                        <p>${p.caption}</p>
+                    </div>`;
+        }).join('')}</div>`;
+    }
+    
+    function renderStats(stats) {
+        if (!stats?.length) return `<p style='text-align: center; color: var(--text-secondary);'>No match stats recorded yet.</p>`;
+        const statsBySport = stats.reduce((acc, current) => {
+          (acc[current.sport] = acc[current.sport] || []).push(current);
+          return acc;
+        }, {});
+        
+        let html = '';
+        for (const sport in statsBySport) {
+            html += `<div style="margin-bottom: 20px;"><h3>${sport} Stats</h3>`;
+            statsBySport[sport].forEach(match => {
+                html += `<div style="border: 1px solid var(--border-color); padding: 10px; margin-bottom: 10px; border-radius: 8px;">
+                            <p><strong>Date:</strong> ${new Date(match.matchDate).toLocaleDateString()}</p>
+                            <p><strong>Opponent:</strong> ${match.opponent}</p>
+                            <p><strong>Stats:</strong> ${JSON.stringify(match.stats)}</p>
+                         </div>`;
+            });
+            html += `</div>`;
+        }
+        return html;
+    }
+    
+    function renderOverallStats(stats) {
+        if (!stats?.length) {
+            return `<p style='text-align: center; color: var(--text-secondary);'>No stats recorded yet.</p>`;
+        }
+
+        const aggregatedStats = stats.reduce((acc, current) => {
+            if (!acc[current.sport]) {
+                acc[current.sport] = { totalMatches: 0, stats: {} };
+            }
+            acc[current.sport].totalMatches++;
+            for (const key in current.stats) {
+                if (acc[current.sport].stats[key]) {
+                    acc[current.sport].stats[key] += current.stats[key];
+                } else {
+                    acc[current.sport].stats[key] = current.stats[key];
+                }
+            }
+            return acc;
+        }, {});
+
+        let html = `<div id="overall-stats-container">`;
+        for (const sport in aggregatedStats) {
+            html += `<div class="overall-stat-card">
+                        <h3>${sport} Stats</h3>
+                        <p>Total Matches: ${aggregatedStats[sport].totalMatches}</p>`;
+            for (const stat in aggregatedStats[sport].stats) {
+                html += `<p><strong>${stat.replace(/_/g, ' ').toUpperCase()}:</strong> ${aggregatedStats[sport].stats[stat]}</p>`;
+            }
+            html += `</div>`;
+        }
+        html += `</div>`;
+        return html;
+    }
+
+
+    function renderRoster(roster) {
+        if (!roster?.length) return `<p style='text-align: center; color: var(--text-secondary);'>Your roster is empty.</p>`;
+        return `...`;
+    }
+
+    function renderTeam(team) {
+        return `<div style="border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                    <h3><a href="profile.html?id=${team._id}">${team.name}</a></h3>
+                </div>`;
+    }
+    
+// profile.html -> inside the script tag
+
+function renderRequests(requests) {
+    if (!requests || requests.length === 0) {
+        return `<p style='text-align: center; color: var(--text-secondary);'>No pending join requests.</p>`;
+    }
+    const pendingRequests = requests.filter(req => req.status === 'pending');
+    if (pendingRequests.length === 0) {
+        return `<p style='text-align: center; color: var(--text-secondary);'>No pending join requests.</p>`;
+    }
+    return pendingRequests.map(req => `
+        <div class="join-request-item" style="display:flex; justify-content:space-between; align-items:center; background:#2a2a2a; padding:10px; border-radius:8px; margin-bottom:8px;">
+            <a href="profile.html?id=${req.player._id}" style="color:#007bff; text-decoration:none;">${req.player.name}</a>
+            <div>
+                <button onclick="manageRequest('${req._id}', 'approved')" style="background:#28a745; color:#fff; border:none; padding:8px; border-radius:4px; cursor:pointer;">Approve</button>
+                <button onclick="manageRequest('${req._id}', 'rejected')" style="background:#dc3545; color:#fff; border:none; padding:8px; border-radius:4px; cursor:pointer;">Reject</button>
+            </div>
+        </div>
+    `).join('');
+}
+    async function manageRequest(requestId, status) {
+        try {
+            await apiRequest(`/api/users/manage-join-request/${requestId}`, 'PUT', { status });
+            alert(`Request ${status} successfully.`);
+            loadProfile(); // Reload the profile to update the list
+        } catch (error) {
+            alert('Failed to manage request: ' + error.message);
+        }
+    }
+
+
+    function showTab(event, tabName) {
+        document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`${tabName}-content`).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+    
+    document.addEventListener("DOMContentLoaded", loadProfile);
+</script>
+</body>
+</html>

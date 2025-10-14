@@ -1,7 +1,6 @@
 import express from "express";
 import auth from "../middleware/authMiddleware.js";
 import Tournament from "../models/Tournament.js";
-import Match from "../models/atch.js";
 
 const router = express.Router();
 

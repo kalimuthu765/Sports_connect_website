@@ -1,17 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - SportsConnect</title>
-    <link rel="stylesheet" href="css/profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - SportsConnect</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+/* --- 1. GLOBAL & GLASSMOPHISM SETUP (Matching Dashboard) --- */
+:root {
+    --primary-blue: #00b4d8;
+    --text-light: #f0f0f0;
+    --bg-dark: #1a1a1a;
+    --card-light-glass: rgba(255, 255, 255, 0.08);
+    --border-color: rgba(255, 255, 255, 0.15);
+    --shadow-deep: 0 8px 30px rgba(0, 0, 0, 0.6);
+    --card-radius: 25px; /* Slightly larger radius for a modern feel */
+    --text-secondary: rgba(255, 255, 255, 0.6);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    color: var(--text-light);
+    min-height: 100vh;
+    /* Match Dashboard Background */
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+    position: relative;
+}
+
+/* Abstract Background Elements (For modern glow effect) */
+body::before, body::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px); 
+    opacity: 0.6;
+    z-index: -1;
+}
+body::before {
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, #00c6ff, #0072ff); 
+    top: -100px; left: -100px;
+}
+body::after {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #ff00c6, #ff7200); 
+    bottom: -150px; right: -150px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 40px auto; /* Increased margin for more space */
+    padding: 0 20px;
+    position: relative;
+}
+
+/* --- 2. CARD & BUTTON STYLES --- */
+.card {
+    background-color: var(--card-light-glass); 
+    backdrop-filter: blur(15px) saturate(180%);
+    border-radius: var(--card-radius);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5), inset 0 0 5px rgba(255, 255, 255, 0.1); /* Enhanced shadow */
+    border: 1px solid var(--border-color);
+    padding: 0;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    border: none;
+    margin-left: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: var(--primary-blue);
+    transform: none;
+    box-shadow: none;
+}
+.btn, .btn.primary {
+    background-color: var(--primary-blue);
+    color: var(--bg-dark); 
+}
+.btn.primary:hover {
+    background-color: #008c9e;
+}
+
+/* Back Link (Slightly enhanced) */
+.back-link {
+    position: absolute;
+    top: -20px; /* Positioned slightly outside the card */
+    left: 20px;
+    font-size: 2.2em;
+    color: var(--text-light);
+    text-decoration: none;
+    z-index: 10;
+    transition: color 0.2s;
+    background: rgba(0,0,0,0.4);
+    border-radius: 50%;
+    width: 40px; height: 40px;
+    display: flex; justify-content: center; align-items: center;
+}
+.back-link:hover {
+    color: var(--primary-blue);
+    background: rgba(0,0,0,0.6);
+}
+
+/* --- 3. PROFILE HEADER DESIGN --- */
+.profile-header {
+    position: relative;
+    padding-bottom: 30px;
+}
+/* CUSTOM ABSTRACT/LOGO BANNER STYLE */
+.profile-header-banner {
+    height: 250px;
+    background-color: #0d47a1; /* Deep blue fallback */
+    background-image: 
+        radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.1) 1px, transparent 0),
+        linear-gradient(135deg, #0d47a1 0%, #1e88e5 100%); /* Subtle dot pattern over a gradient */
+    background-size: 30px 30px, cover;
+    background-position: center;
+    border-top-left-radius: var(--card-radius);
+    border-top-right-radius: var(--card-radius);
+    position: relative;
+    /* Add a subtle dark overlay for better text contrast */
+    box-shadow: inset 0 -20px 30px rgba(0, 0, 0, 0.5);
+}
+
+.profile-header-actions {
+    position: absolute;
+    top: 20px;
+    right: 30px; /* Adjusted for card padding */
+    z-index: 5;
+    display: flex;
+    gap: 10px;
+}
+
+.profile-main-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 40px;
+    margin-top: -80px;
+    position: relative;
+}
+.profile-avatar-info-group {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+.profile-avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    /* Enhanced Avatar Look */
+    border: 5px solid var(--bg-dark); 
+    box-shadow: 0 0 0 5px var(--primary-blue), 0 0 20px rgba(0, 180, 216, 0.8);
+    flex-shrink: 0;
+}
+.profile-info {
+    padding-top: 40px;
+}
+.profile-info h1 {
+    margin: 0 0 5px 0;
+    font-size: 2.8em;
+    font-weight: 700;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+.profile-info p {
+    margin: 3px 0;
+    color: var(--text-secondary);
+}
+.profile-info strong {
+    color: var(--text-light);
+}
+
+/* Stats Bar */
+.stats-bar {
+    display: flex;
+    gap: 20px;
+    padding: 10px 0;
+    margin-bottom: 10px;
+    background: rgba(0, 0, 0, 0.2); /* Slight background to lift stats */
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
+.stat-item {
+    text-align: center;
+    position: relative;
+    padding-right: 20px;
+}
+.stat-item:not(:last-child)::after {
+    content: '|';
+    right: 5px;
+    color: var(--text-secondary);
+}
+.stat-item strong {
+    font-size: 1.6em; 
+    color: var(--primary-blue); 
+}
+.stat-item span {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+}
+
+/* --- 4. TABS AND CONTENT --- */
+.profile-nav {
+    border-bottom: 2px solid var(--border-color);
+    margin: 0 40px;
+    margin-top: 20px; /* Added separation from header */
+}
+.tabs {
+    display: flex;
+    /* Use a slight transparency for the tabs container */
+    background: rgba(0, 0, 0, 0.1); 
+    border-radius: 10px 10px 0 0;
+    padding-top: 5px;
+}
+.tab-btn {
+    /* ... (style remains largely the same but with icons) */
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 15px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s, border-bottom 0.3s;
+    border-bottom: 3px solid transparent;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.tab-btn:hover {
+    color: var(--text-light);
+}
+.tab-btn.active {
+    color: var(--primary-blue);
+    border-bottom: 3px solid var(--primary-blue);
+}
+
+.tab-content {
+    padding: 30px 40px;
+}
+/* Post List Styling */
+.posts-scroll-box {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 15px;
+}
+/* (Scrollbar styling and Post item styles remain clean) */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    /* (Responsive styles remain the same for functionality) */
+    .profile-main-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-top: -60px;
+        padding: 0 20px;
+    }
+    .profile-avatar-info-group {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+    }
+    .profile-info {
+        padding-top: 0;
+    }
+    .profile-info h1 {
+        font-size: 2em;
+    }
+    .stats-bar {
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    .profile-nav, .tab-content {
+        margin: 0 10px;
+        padding: 20px 10px;
+    }
+    .tab-btn {
+        font-size: 0.9em;
+        padding: 10px 15px;
+    }
+}
+</style>
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.html" class="back-link">&larr;</a>
+        <a href="dashboard.html" class="back-link" title="Go back to Dashboard"><i class="fas fa-arrow-left"></i></a>
         
         <div class="card" id="profile-container">
-            <p style="padding: 40px; text-align: center;">Loading profile...</p>
+            <p style="padding: 40px; text-align: center; color: var(--text-secondary);">Loading profile...</p>
         </div>
     </div>
 
@@ -37,6 +337,19 @@
         return response.status === 204 ? null : response.json();
     }
     
+    async function followUser(id) {
+        try {
+            const btn = document.querySelector('.profile-header-actions .btn');
+            btn.disabled = true;
+            await apiRequest(`/api/users/${id}/follow`, 'POST');
+            alert('User followed successfully!');
+            loadProfile(); // Reload to update button state
+        } catch (error) {
+            alert('Failed to follow user: ' + error.message);
+            btn.disabled = false;
+        }
+    }
+
     async function loadProfile() {
         try {
             const endpoint = (profileId === currentUserId) ? '/api/users/me' : `/api/users/${profileId}`;
@@ -57,49 +370,48 @@
 
         const avatarSrc = user.avatar && user.avatar.trim() !== "" 
             ? user.avatar 
-            : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=160&background=0d6efd&color=fff&bold=true`;
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=160&background=00b4d8&color=fff&bold=true`;
         
-        const bannerSrc = user.banner && user.banner.trim() !== "" 
-            ? user.banner 
-            : "https://source.unsplash.com/1600x400/?dark,stadium";
+        // Removed dynamic image and rely on CSS abstract design for banner
+        const bannerSrc = "abstract"; 
         
         const isFollowing = user.followers?.includes(currentUserId);
 
         let actionButtonHTML = isOwnProfile 
             ? `
-                <a href="edit-profile.html" class="btn">Edit Profile</a>
-                <button class="btn" onclick="window.location.href='match-stat.html'">Add Stats</button>
+                <a href="edit-profile.html" class="btn"><i class="fas fa-edit"></i> Edit Profile</a>
+                <a href="match-stat.html" class="btn"><i class="fas fa-chart-line"></i> Add Stats</a>
               `
             : `<button class="btn" onclick="followUser('${user._id}')" ${isFollowing ? 'disabled' : ''}>${isFollowing ? 'Following' : 'Follow'}</button>`;
 
-        let tabsHTML = `<button class="tab-btn active" onclick="showTab(event, 'posts')">Posts</button>`;
+        let tabsHTML = `<button class="tab-btn active" onclick="showTab(event, 'posts')"><i class="fas fa-feather-alt"></i> Posts</button>`;
         let tabPanesHTML = `<div id="posts-content" class="tab-pane active">${renderPosts(user.posts)}</div>`;
 
         if (user.role === 'player') {
-            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'stats')">Match Stats</button>`;
-            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'overall')">Overall Stats</button>`;
-            tabsHTML += user.team ? `<button class="tab-btn" onclick="showTab(event, 'team')">My Team</button>` : '';
+            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'stats')"><i class="fas fa-list-ol"></i> Match Stats</button>`;
+            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'overall')"><i class="fas fa-chart-bar"></i> Overall Stats</button>`;
+            tabsHTML += user.team ? `<button class="tab-btn" onclick="showTab(event, 'team')"><i class="fas fa-shield-alt"></i> My Team</button>` : '';
             tabPanesHTML += `<div id="stats-content" class="tab-pane">${renderStats(user.stats)}</div>`;
             tabPanesHTML += `<div id="overall-content" class="tab-pane">${renderOverallStats(user.stats)}</div>`;
             tabPanesHTML += user.team ? `<div id="team-content" class="tab-pane">${renderTeam(user.team)}</div>` : '';
         }
         if (user.role === 'team' && isOwnProfile) {
-            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'roster')">Roster</button>`;
-            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'requests')">Join Requests</button>`;
+            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'roster')"><i class="fas fa-users"></i> Roster</button>`;
+            tabsHTML += `<button class="tab-btn" onclick="showTab(event, 'requests')"><i class="fas fa-user-plus"></i> Join Requests</button>`;
             tabPanesHTML += `<div id="roster-content" class="tab-pane">${renderRoster(user.roster)}</div>`;
             tabPanesHTML += `<div id="requests-content" class="tab-pane">${renderRequests(user.joinRequests)}</div>`;
         }
 
         container.innerHTML = `
             <div class="profile-header">
-                <div class="profile-header-banner" style="background-image: url('${bannerSrc}')"></div>
+                <div class="profile-header-banner" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), linear-gradient(135deg, #0d47a1 0%, #1e88e5 100%); background-size: 30px 30px, cover;"></div>
                 <div class="profile-header-actions">${actionButtonHTML}</div>
                 
                 <div class="profile-main-content">
                     <div class="profile-avatar-info-group">
                         <img src="${avatarSrc}" alt="Avatar" class="profile-avatar">
                         <div class="profile-info">
-                            <h1>${user.name}</h1>
+                            <h1>${user.name} <span style="font-size: 0.5em; color: var(--primary-blue);">(${user.role.toUpperCase()})</span></h1>
                             <p>${user.bio || 'A passionate sports enthusiast.'}</p>
                             ${user.sport ? `<p><strong>Sport:</strong> ${user.sport}</p>` : ''}
                             ${user.cricketRole ? `<p><strong>Role:</strong> ${user.cricketRole}</p>` : ''}
@@ -132,10 +444,11 @@
     
     function renderPosts(posts) {
         if (!posts?.length) return `<p style='text-align: center; color: var(--text-secondary);'>No posts yet.</p>`;
-        return `<div class="posts-scroll-box">${posts.map(p => {
+        const sortedPosts = [...posts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        return `<div class="posts-scroll-box">${sortedPosts.map(p => {
             const postAuthor = (p.user._id === currentUserId) ? 'My Post' : `Posted by <a href="profile.html?id=${p.user._id}">${p.user.name}</a>`;
             return `<div class="post-item">
-                        <div class="post-header">${postAuthor}</div>
+                        <div class="post-header">${postAuthor} - ${new Date(p.createdAt).toLocaleDateString()}</div>
                         <p>${p.caption}</p>
                     </div>`;
         }).join('')}</div>`;
@@ -144,19 +457,19 @@
     function renderStats(stats) {
         if (!stats?.length) return `<p style='text-align: center; color: var(--text-secondary);'>No match stats recorded yet.</p>`;
         const statsBySport = stats.reduce((acc, current) => {
-          (acc[current.sport] = acc[current.sport] || []).push(current);
-          return acc;
+            (acc[current.sport] = acc[current.sport] || []).push(current);
+            return acc;
         }, {});
         
         let html = '';
         for (const sport in statsBySport) {
-            html += `<div style="margin-bottom: 20px;"><h3>${sport} Stats</h3>`;
+            html += `<div style="margin-bottom: 20px;"><h3>${sport} Match Stats</h3>`;
             statsBySport[sport].forEach(match => {
-                html += `<div style="border: 1px solid var(--border-color); padding: 10px; margin-bottom: 10px; border-radius: 8px;">
-                            <p><strong>Date:</strong> ${new Date(match.matchDate).toLocaleDateString()}</p>
-                            <p><strong>Opponent:</strong> ${match.opponent}</p>
-                            <p><strong>Stats:</strong> ${JSON.stringify(match.stats)}</p>
-                         </div>`;
+                const statDetails = Object.entries(match.stats).map(([key, value]) => `<strong>${key.replace(/_/g, ' ')}:</strong> ${value}`).join(', ');
+                html += `<div style="background: rgba(0, 0, 0, 0.15); padding: 15px; margin-bottom: 10px; border-radius: 10px; border-left: 4px solid var(--primary-blue); box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                             <p style="margin-top:0;"><strong>Date:</strong> ${new Date(match.matchDate).toLocaleDateString()} | <strong>Opponent:</strong> ${match.opponent}</p>
+                             <p style="margin-bottom:0;">${statDetails}</p>
+                           </div>`;
             });
             html += `</div>`;
         }
@@ -174,10 +487,13 @@
             }
             acc[current.sport].totalMatches++;
             for (const key in current.stats) {
-                if (acc[current.sport].stats[key]) {
-                    acc[current.sport].stats[key] += current.stats[key];
-                } else {
-                    acc[current.sport].stats[key] = current.stats[key];
+                const value = current.stats[key];
+                if (typeof value === 'number') {
+                     if (acc[current.sport].stats[key]) {
+                        acc[current.sport].stats[key] += value;
+                    } else {
+                        acc[current.sport].stats[key] = value;
+                    }
                 }
             }
             return acc;
@@ -186,8 +502,8 @@
         let html = `<div id="overall-stats-container">`;
         for (const sport in aggregatedStats) {
             html += `<div class="overall-stat-card">
-                        <h3>${sport} Stats</h3>
-                        <p>Total Matches: ${aggregatedStats[sport].totalMatches}</p>`;
+                        <h3><i class="fas fa-futbol"></i> ${sport} Totals</h3>
+                        <p>Total Matches: <strong>${aggregatedStats[sport].totalMatches}</strong></p>`;
             for (const stat in aggregatedStats[sport].stats) {
                 html += `<p><strong>${stat.replace(/_/g, ' ').toUpperCase()}:</strong> ${aggregatedStats[sport].stats[stat]}</p>`;
             }
@@ -199,36 +515,39 @@
 
 
     function renderRoster(roster) {
-        if (!roster?.length) return `<p style='text-align: center; color: var(--text-secondary);'>Your roster is empty.</p>`;
-        return `...`;
+        if (!roster?.length) return `<p style='text-align: center; color: var(--text-secondary);'>Your roster is empty. Players will appear here once approved.</p>`;
+        return `<div class="posts-scroll-box"><ul style="list-style: none; padding: 0;">${roster.map(p => `
+            <li style="background: rgba(0, 0, 0, 0.15); padding: 10px; margin-bottom: 8px; border-radius: 8px;"><a href="profile.html?id=${p._id}" style="color: var(--primary-blue); text-decoration: none;">${p.name}</a></li>
+        `).join('')}</ul></div>`;
     }
 
     function renderTeam(team) {
-        return `<div style="border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
-                    <h3><a href="profile.html?id=${team._id}">${team.name}</a></h3>
+        return `<div style="background: rgba(0, 0, 0, 0.2); padding: 25px; border-radius: 15px; border: 2px solid var(--primary-blue); text-align: center;">
+                    <h3 style="margin-top:0; color: var(--primary-blue); font-size: 1.5em;"><i class="fas fa-users"></i> Current Team</h3>
+                    <p style="font-size: 1.2em; color: var(--text-light);">You are currently part of the team:</p>
+                    <a href="profile.html?id=${team._id}" class="btn primary" style="display: inline-block; margin-top: 15px;">View ${team.name} Profile</a>
                 </div>`;
     }
     
-// profile.html -> inside the script tag
-
-function renderRequests(requests) {
-    if (!requests || requests.length === 0) {
-        return `<p style='text-align: center; color: var(--text-secondary);'>No pending join requests.</p>`;
-    }
-    const pendingRequests = requests.filter(req => req.status === 'pending');
-    if (pendingRequests.length === 0) {
-        return `<p style='text-align: center; color: var(--text-secondary);'>No pending join requests.</p>`;
-    }
-    return pendingRequests.map(req => `
-        <div class="join-request-item" style="display:flex; justify-content:space-between; align-items:center; background:#2a2a2a; padding:10px; border-radius:8px; margin-bottom:8px;">
-            <a href="profile.html?id=${req.player._id}" style="color:#007bff; text-decoration:none;">${req.player.name}</a>
-            <div>
-                <button onclick="manageRequest('${req._id}', 'approved')" style="background:#28a745; color:#fff; border:none; padding:8px; border-radius:4px; cursor:pointer;">Approve</button>
-                <button onclick="manageRequest('${req._id}', 'rejected')" style="background:#dc3545; color:#fff; border:none; padding:8px; border-radius:4px; cursor:pointer;">Reject</button>
+    function renderRequests(requests) {
+        if (!requests || requests.length === 0) {
+            return `<p style='text-align: center; color: var(--text-secondary);'>No pending join requests.</p>`;
+        }
+        const pendingRequests = requests.filter(req => req.status === 'pending');
+        if (pendingRequests.length === 0) {
+            return `<p style='text-align: center; color: var(--text-secondary);'>No pending join requests.</p>`;
+        }
+        return `<div class="posts-scroll-box">${pendingRequests.map(req => `
+            <div class="join-request-item" style="display:flex; justify-content:space-between; align-items:center; background:rgba(0, 0, 0, 0.25); padding:15px; border-radius:10px; margin-bottom:10px;">
+                <a href="profile.html?id=${req.player._id}" style="color:var(--primary-blue); text-decoration:none; font-weight:bold;">${req.player.name}</a>
+                <div>
+                    <button class="btn" style="background:#28a745;" onclick="manageRequest('${req._id}', 'approved')">Approve</button>
+                    <button class="btn" style="background:#dc3545;" onclick="manageRequest('${req._id}', 'rejected')">Reject</button>
+                </div>
             </div>
-        </div>
-    `).join('');
-}
+        `).join('')}</div>`;
+    }
+
     async function manageRequest(requestId, status) {
         try {
             await apiRequest(`/api/users/manage-join-request/${requestId}`, 'PUT', { status });
@@ -238,7 +557,6 @@ function renderRequests(requests) {
             alert('Failed to manage request: ' + error.message);
         }
     }
-
 
     function showTab(event, tabName) {
         document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));

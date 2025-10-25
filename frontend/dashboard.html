@@ -4,201 +4,335 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - SportsConnect</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
+/* Base Colors & Variables */
+:root {
+    --primary-blue: #00b4d8;
+    --dark-blue: #0077b6;
+    --text-light: #f0f0f0;
+    --bg-dark: #0a0a0a;
+    --card-light-glass: rgba(255, 255, 255, 0.08);
+    --card-dark-glass: rgba(0, 0, 0, 0.3);
+    --card-accent-glass: rgba(0, 180, 216, 0.15);
+    --border-color: rgba(255, 255, 255, 0.15);
+    --shadow-deep: 0 8px 30px rgba(0, 0, 0, 0.6);
+    --soft-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
 /* Global Styles */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #000;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    color: #000; 
+    color: var(--text-light);
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Abstract Background Elements */
+body::before, body::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px); 
+    opacity: 0.6;
+    z-index: -1;
+}
+body::before {
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, #00c6ff, #0072ff); 
+    top: -100px; left: -100px;
+}
+body::after {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #ff00c6, #ff7200); 
+    bottom: -150px; right: -150px;
 }
 
 /* Navbar */
 .navbar {
-    background: #111;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(10px); 
     padding: 15px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 3px solid #00b4d8; 
+    border-bottom: 2px solid var(--primary-blue); 
 }
 .navbar-brand {
-    font-size: 28px;
-    font-weight: bold;
-    color: #00b4d8;
+    font-size: 28px; font-weight: bold;
+    color: var(--primary-blue);
     text-decoration: none;
+    letter-spacing: 0.5px;
 }
 .navbar a {
-    text-decoration: none;
-    color: #fff;
-    margin: 0 12px;
-    font-weight: bold;
-    transition: color 0.3s;
+    text-decoration: none; color: var(--text-light);
+    margin: 0 15px; font-weight: 500;
+    transition: color 0.3s ease;
 }
-.navbar a:hover { color: #90e0ef; }
+.navbar a:hover { 
+    color: var(--primary-blue); 
+    text-shadow: 0 0 8px rgba(0, 180, 216, 0.7);
+}
 
 /* Main Layout Container */
 .container {
     display: flex;
+    flex-grow: 1;
     max-width: 1400px;
-    margin: 20px auto;
-    gap: 20px;
-    padding: 0 15px;
+    margin: 30px auto;
+    gap: 25px;
+    padding: 0 20px;
+    align-items: flex-start;
 }
 main { flex: 2; }
-aside { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+aside { flex: 1; display: flex; flex-direction: column; gap: 25px; }
 
-/* --- DASHBOARD PROFILE HEADER STYLES --- */
+/* --- PROFILE HEADER --- */
 #dashboard-profile-header {
-    background-color: #E0F7FA; 
-    border-radius: 12px;
-    padding: 20px;
+    background-color: var(--card-light-glass); 
+    backdrop-filter: blur(15px) brightness(1.2) saturate(150%);
+    border-radius: 18px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: var(--text-light);
+    box-shadow: 0 0 20px rgba(0, 180, 216, 0.5), var(--shadow-deep); 
+    border: 1px solid var(--primary-blue);
+}
+.profile-main-area {
     display: flex;
     align-items: center;
     gap: 20px;
-    color: #333;
 }
 .dash-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
+    width: 80px; height: 80px;
+    border-radius: 50%; object-fit: cover;
     flex-shrink: 0;
-    border: 3px solid #00b4d8;
+    border: 3px solid var(--primary-blue);
+    box-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
 }
 .dash-info {
     flex-grow: 1;
+    min-width: 0;
 }
 .dash-info h3 {
-    margin: 0 0 5px 0;
-    font-size: 1.8em;
-    color: #000;
+    margin: 0 0 3px 0;
+    font-size: 2em; 
+    font-weight: 700;
+    color: var(--text-light);
 }
 .dash-info p {
     margin: 0;
-    color: #555;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 .dash-stats {
     display: flex;
-    gap: 25px;
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dash-stat-item {
     text-align: center;
+    flex-basis: 30%;
 }
 .dash-stat-item strong {
     display: block;
-    font-size: 1.2em;
+    font-size: 1.4em; 
     font-weight: bold;
+    color: var(--primary-blue); 
 }
 .dash-stat-item span {
-    font-size: 0.9em;
-    color: #555;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
 }
 
-/* Card Styles & Previous Colors */
+/* --- GENERAL CARD STYLES --- */
 .card {
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: var(--shadow-deep);
     opacity: 0;
     animation: fadeIn 0.8s forwards;
-    color: #000;
+    color: var(--text-light);
+    backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid var(--border-color); 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.card h3, .card h2 { color: #333; }
+.card:hover {
+    transform: translateY(-3px); 
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+}
+.card h3, .card h2 { 
+    color: var(--text-light); 
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1); 
+    padding-bottom: 12px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.card h3 i, .card h2 i {
+    color: var(--primary-blue);
+    font-size: 1.2em;
+}
 
-/* Specific card colors from previous theme */
-#team-info-card { background: #E8F5E9; }
-main .card { background: #FFECB3; }
-aside:last-of-type .card:first-of-type { background: #E1F5FE; }
-aside:last-of-type .card:last-of-type { background: #F3E5F5; }
+.card p { color: rgba(255, 255, 255, 0.7); line-height: 1.5; }
 
+/* --- MAIN SOCIAL FEED CARD --- */
+main .card { 
+    background-color: var(--card-dark-glass); 
+    border: 1px solid var(--primary-blue); 
+    box-shadow: 0 0 15px rgba(0, 180, 216, 0.2), var(--shadow-deep);
+}
 
-/* MODAL STYLES */
+/* --- TEAM INFO CARD --- */
+#team-info-card, #team-requests-card {
+    background-color: var(--card-accent-glass); 
+    border: 1px solid rgba(0, 180, 216, 0.5); 
+    box-shadow: var(--soft-shadow);
+}
+#team-info-card h3 i, #team-requests-card h3 i {
+    color: #80e0ff;
+}
+
+/* --- ASIDE CARDS --- */
+aside:last-of-type .card { 
+    background-color: var(--card-light-glass); 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    box-shadow: var(--soft-shadow);
+}
+
+/* --- POSTS INSIDE FEED --- */
+.post {
+    background: rgba(255, 255, 255, 0.08); 
+    padding: 15px; 
+    margin-bottom: 10px; 
+    border-radius: 10px;
+    color: var(--text-light); 
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.3s ease;
+}
+.post:hover {
+    background: rgba(255, 255, 255, 0.15); 
+}
+.post-header { 
+    font-weight: bold; margin-bottom: 5px; 
+    color: var(--primary-blue); 
+    font-size: 1.1em;
+}
+.post p {
+    margin: 0;
+    font-size: 0.95em;
+}
+
+/* --- ITEM LISTS --- */
+.item-list li {
+    padding: 10px 12px; 
+    margin-bottom: 8px; 
+    display: flex; justify-content: space-between; 
+    align-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* --- MODAL FIX: CENTERING AND HIDING BY DEFAULT --- */
 .post-modal {
-    display: none; position: fixed; z-index: 101;
-    left: 0; top: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.6);
-    justify-content: center; align-items: center;
+    /* Critical fix: hide by default */
+    display: none; 
+    
+    position: fixed; 
+    z-index: 101;
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(0,0,0,0.85); 
+    
+    /* Centering logic: */
+    justify-content: center;
+    align-items: center; 
 }
 .post-modal-content {
-    background-color: #fefefe; padding: 25px; border-radius: 12px;
-    width: 90%; max-width: 500px; position: relative;
+    background-color: #1a1a1a; 
+    padding: 30px; 
+    border-radius: 18px;
+    width: 90%; max-width: 550px;
+    position: relative;
+    color: var(--text-light);
+    box-shadow: var(--shadow-deep);
+    border: 1px solid var(--primary-blue);
+    backdrop-filter: blur(8px); 
+    animation: slideInFromTop 0.3s ease-out forwards;
+}
+.post-modal-content h3 {
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    text-shadow: 0 0 5px rgba(0, 180, 216, 0.3);
 }
 .post-modal-content textarea {
-    width: calc(100% - 20px); padding: 10px; margin-bottom: 15px;
-    border: 1px solid #ddd; border-radius: 8px; min-height: 120px;
+    width: calc(100% - 20px); padding: 15px; margin-bottom: 20px;
+    border: 1px solid #444; border-radius: 10px; min-height: 150px;
+    background-color: #2b2b2b; 
+    color: var(--text-light);
+    font-size: 1.1em;
+    resize: vertical;
 }
-.post-modal-actions { display: flex; justify-content: flex-end; }
 .close-button {
-    color: #aaa; position: absolute; top: 10px; right: 20px;
-    font-size: 28px; font-weight: bold; cursor: pointer;
+    color: #888; position: absolute; top: 15px; right: 25px;
+    font-size: 32px; font-weight: bold; cursor: pointer;
+    transition: color 0.3s ease;
 }
-
-/* Button Styles */
-.btn {
-    background: #00b4d8; color: #fff; border: none; padding: 10px 20px;
-    border-radius: 8px; cursor: pointer; font-weight: bold;
-    transition: background-color 0.3s, transform 0.2s;
-}
-.btn:hover { background: #0077b6; transform: translateY(-2px); }
-.btn-sm { padding: 6px 12px; font-size: 0.9em; }
-
-/* --- SOCIAL FEED & SCROLLBAR STYLES --- */
-#feed {
-    max-height: 70vh; 
-    overflow-y: auto; 
-    padding-right: 10px; 
-}
-/* Custom Scrollbar for Webkit browsers (Chrome, Safari) */
-#feed::-webkit-scrollbar {
-    width: 8px;
-}
-#feed::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-#feed::-webkit-scrollbar-thumb {
-    background: #00b4d8; 
-    border-radius: 10px;
-}
-#feed::-webkit-scrollbar-thumb:hover {
-    background: #0077b6; 
-}
-
-.post {
-    background: #f5f5f5; padding: 15px; margin-bottom: 12px;
-    border-radius: 10px;
-}
-.post-header { font-weight: bold; margin-bottom: 6px; color: #003049; }
-
-/* Sidebar Item Lists */
-.item-list { list-style: none; padding: 0; margin: 0; }
-.item-list li {
-    padding: 5px; margin-bottom: 10px; display: flex;
-    justify-content: space-between; align-items: center;
-    background: #e9ecef; border-radius: 8px;
-}
-.item-list a {
-    text-decoration: none; color: #0077b6; font-weight: bold;
-    padding: 8px 12px; display: block; width: 100%;
-}
-.item-list .user-role { color: #6c757d; font-size: 0.85em; font-weight: normal; }
+.close-button:hover { color: var(--primary-blue); }
 
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+@keyframes slideInFromTop {
+    from { transform: translateY(-100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
 
 /* Responsive Styles */
 @media (max-width: 992px) {
-    .container { flex-direction: column; }
-    #dashboard-profile-header { flex-direction: column; text-align: center; }
-    .dash-stats { justify-content: space-around; width: 100%; margin-top: 15px; }
+    .container { flex-direction: column; margin-top: 20px; gap: 20px;}
+    #dashboard-profile-header { padding: 20px; }
+    .profile-main-area { justify-content: center; } 
+    .dash-info { text-align: center; } 
+    .dash-stats { justify-content: space-around; padding: 10px 0; }
+    .navbar { padding: 15px 20px; }
+}
+@media (max-width: 600px) {
+    .dash-avatar { width: 70px; height: 70px; }
+    .dash-info h3 { font-size: 1.8em; }
+    .dash-stats { gap: 10px; }
+    .dash-stat-item strong { font-size: 1.2em; }
 }
 </style>
 </head>
@@ -233,34 +367,37 @@ aside:last-of-type .card:last-of-type { background: #F3E5F5; }
         
         <div class="card" id="team-info-card">
         </div>
+        
         <div class="card" id="team-requests-card" style="display:none;">
-            <h3>Join Requests</h3>
+            <h3><i class="fas fa-user-plus"></i> Join Requests</h3>
             <ul id="join-requests-list" class="item-list"></ul>
         </div>
     </aside>
 
     <main>
         <div class="card">
-            <h2>Social Feed</h2>
+            <h2><i class="fas fa-bullhorn"></i> Social Feed</h2>
+            <button class="btn btn-sm" style="width: 100%; margin-bottom: 20px;" onclick="openPostModal()">Click here to share an update</button>
             <div id="feed"><p>Loading feed...</p></div>
         </div>
     </main>
 
     <aside>
         <div class="card">
-            <h3>Live Tournaments</h3>
+            <h3><i class="fas fa-trophy"></i> Live Tournaments</h3>
             <ul class="item-list" id="tournaments-list"><p>Loading tournaments...</p></ul>
         </div>
         <div class="card">
-            <h3>Recommended</h3>
+            <h3><i class="fas fa-handshake"></i> Recommended</h3>
             <ul class="item-list" id="recommended-list">
-                <p>Loading recommendations...</p>
-            </ul>
+                <p>Loading recommendations...</p></ul>
         </div>
     </aside>
 </div>
 
 <script>
+// --- START: SCRIPT CONTENT (UNCHANGED CORE LOGIC) ---
+
 const token = localStorage.getItem("token");
 const userId = localStorage.getItem("userId");
 if (!token || !userId) {
@@ -299,10 +436,12 @@ async function loadProfile() {
             : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=80&background=00b4d8&color=fff&bold=true`;
 
         profileHeader.innerHTML = `
-            <img src="${avatarSrc}" alt="Profile" class="dash-avatar">
-            <div class="dash-info">
-                <h3>${user.name}</h3>
-                <p>${user.bio || (user.role === 'team' ? 'Team/Club' : 'Player')}</p>
+            <div class="profile-main-area">
+                <img src="${avatarSrc}" alt="Profile" class="dash-avatar">
+                <div class="dash-info">
+                    <h3>${user.name}</h3>
+                    <p>${user.bio || (user.role === 'team' ? 'Team/Club' : 'Player')}</p>
+                </div>
             </div>
             <div class="dash-stats">
                 <div class="dash-stat-item">
@@ -329,19 +468,19 @@ async function loadProfile() {
         loadRoleSpecificInfo(user);
     } catch (error) {
         console.error('Failed to load profile:', error);
-        document.getElementById('dashboard-profile-header').innerHTML = '<p>Could not load profile.</p>';
+        document.getElementById('dashboard-profile-header').innerHTML = '<p style="color:red;">Could not load profile.</p>';
     }
 }
 
 async function loadRoleSpecificInfo(user) {
     const infoCard = document.getElementById('team-info-card');
     if (user.role === 'team') {
-        infoCard.innerHTML = '<h3>Our Players</h3><ul class="item-list" id="player-list">Loading...</ul>';
+        infoCard.innerHTML = '<h3><i class="fas fa-users"></i> Our Players</h3><ul class="item-list" id="player-list">Loading...</ul>';
         const players = await apiRequest(`/api/users/${user._id}/players`).catch(() => []);
         const playerList = document.getElementById('player-list');
         playerList.innerHTML = players.length > 0 ? players.map(p => `<li><a href="profile.html?id=${p._id}">${p.name}</a></li>`).join('') : '<p>No players on this team yet.</p>';
     } else if (user.role === 'player') {
-        infoCard.innerHTML = `<h3>My Team</h3><div id="player-team-status">Loading...</div>`;
+        infoCard.innerHTML = `<h3><i class="fas fa-shield-alt"></i> My Team</h3><div id="player-team-status">Loading...</div>`;
         const statusDiv = document.getElementById('player-team-status');
         if (user.team) {
             statusDiv.innerHTML = `<ul class="item-list"><li><a href="profile.html?id=${user.team._id}">${user.team.name}</a></li></ul>`;
@@ -360,6 +499,9 @@ async function loadFeed() {
     try {
         const posts = await apiRequest('/api/posts/feed');
         const feedDiv = document.getElementById('feed');
+        feedDiv.style.maxHeight = '60vh'; 
+        feedDiv.style.overflowY = 'auto'; 
+
         feedDiv.innerHTML = posts.length > 0 ? posts.map(p => `
             <div class="post">
                 <div class="post-header">${p.user.name}</div>
@@ -367,17 +509,25 @@ async function loadFeed() {
             </div>
         `).join('') : '<p>Your feed is empty. Follow others to see their posts!</p>';
     } catch (error) {
-        document.getElementById('feed').innerHTML = '<p>Could not load feed.</p>';
+        document.getElementById('feed').innerHTML = '<p style="color:red;">Could not load feed.</p>';
     }
 }
 
-function openPostModal() { document.getElementById('postModal').style.display = 'flex'; }
-function closePostModal() { document.getElementById('postModal').style.display = 'none'; }
+// FIX: Modal display logic updated
+function openPostModal() { 
+    const modal = document.getElementById('postModal');
+    modal.style.display = 'flex'; // Use flex to center the content
+}
+function closePostModal() { 
+    document.getElementById('postModal').style.display = 'none'; 
+}
+
 async function createPostFromModal() {
     const caption = document.getElementById('modal-post-caption').value.trim();
     if (!caption) return alert('Post cannot be empty.');
     try {
         await apiRequest('/api/posts', 'POST', { caption });
+        document.getElementById('modal-post-caption').value = ''; 
         closePostModal();
         loadFeed();
         loadProfile(); 
@@ -394,7 +544,7 @@ async function loadTournaments() {
             <li><a href="tournament-details.html?id=${t._id}">${t.name}</a></li>
         `).join('') : '<p>No tournaments available.</p>';
     } catch(error) {
-        document.getElementById('tournaments-list').innerHTML = '<p>Could not load tournaments.</p>';
+        document.getElementById('tournaments-list').innerHTML = '<p style="color:red;">Could not load tournaments.</p>';
     }
 }
 
@@ -430,7 +580,7 @@ async function loadRecommendations() {
             </li>
         `).join('');
     } catch (error) {
-        document.getElementById('recommended-list').innerHTML = '<p>Could not load recommendations.</p>';
+        document.getElementById('recommended-list').innerHTML = '<p style="color:red;">Could not load recommendations.</p>';
     }
 }
 
@@ -479,6 +629,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTournaments();
     loadRecommendations();
 });
+// --- END: SCRIPT CONTENT (UNCHANGED CORE LOGIC) ---
 </script>
 </body>
 </html>

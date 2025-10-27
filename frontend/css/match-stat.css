@@ -1,8 +1,8 @@
 /* match-stat.css */
+/* Styles now primarily driven by global style.css for consistency. */
 
-/* --- General Page Layout --- */
 .match-stat-container {
-    max-width: 600px;
+    max-width: 700px;
     margin: 50px auto;
     padding: 20px;
 }
@@ -10,132 +10,35 @@
 .match-stat-container .header {
     text-align: center;
     margin-bottom: 30px;
-    color: #e0e0e0;
 }
 
-.match-stat-container .header h1 {
-    font-size: 2.5em;
-    color: #00b894;
-    margin-bottom: 10px;
-}
-
-.match-stat-container .header p {
-    font-size: 1.1em;
-    color: #a0a0a0;
-}
-
-/* --- Card & Form Styling --- */
-.stat-form-card {
-    background-color: #1a1a1a;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    padding: 30px;
-}
-
-.form-group {
+.scroll-box {
+    max-height: 350px; 
+    overflow-y: auto;  
+    padding-right: 15px; 
     margin-bottom: 20px;
 }
 
-.form-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #fff;
-    font-size: 1em;
+.stat-field {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
-.form-group input,
-.form-group select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #383838;
-    border-radius: 6px;
-    background-color: #2a2a2a;
-    color: #fff;
-    font-size: 1em;
-    transition: border-color 0.3s;
+.stat-field label { 
+    width: 45%; 
+    font-weight: normal; 
+    color: var(--text-secondary); 
+    margin-bottom: 0;
 }
 
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #00b894;
-    box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.2);
-}
+/* Optional: Style the scrollbar (using global scrollbar styles now) */
 
-.form-group input::placeholder {
-    color: #777;
-}
-
-.submit-btn {
-    width: 100%;
-    font-size: 1.1em;
-    padding: 15px;
-    background-color: #00b894;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.submit-btn:hover {
-    background-color: #009975;
-}
-
-/* --- Responsive adjustments for smaller screens --- */
 @media (max-width: 600px) {
     .match-stat-container {
         padding: 0 15px;
     }
-    .stat-form-card {
-        padding: 20px;
-    }
-    .form-group input,
-    .form-group select,
-    .submit-btn {
-        font-size: 0.9em;
-    }
-}
-/* match-stat.css */
-/* ... existing styles ... */
-
-.scroll-box {
-    max-height: 350px; /* Set a maximum height for the container */
-    overflow-y: auto;  /* Enable vertical scrolling when content exceeds the max height */
-    padding-right: 15px; /* Add some padding to make space for the scrollbar */
-    margin-bottom: 20px; /* Add spacing below the scrollable area */
-}
-
-/* Optional: Style the scrollbar to match the dark theme */
-.scroll-box::-webkit-scrollbar {
-    width: 8px;
-}
-.scroll-box::-webkit-scrollbar-track {
-    background: #383838;
-    border-radius: 10px;
-}
-.scroll-box::-webkit-scrollbar-thumb {
-    background: #00b894;
-    border-radius: 10px;
-}
-.scroll-box::-webkit-scrollbar-thumb:hover {
-    background: #009975;
-}
-/* profile.css */
-
-/* ... existing styles ... */
-
-.tabs .add-stats-btn {
-    background-color: #00b894; /* Match the primary color */
-    color: #fff;
-    border-radius: 8px;
-    padding: 12px 20px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-
-.tabs .add-stats-btn:hover {
-    background-color: #009975;
+    .stat-field { flex-direction: column; align-items: flex-start; }
+    .stat-field label { width: 100%; }
 }

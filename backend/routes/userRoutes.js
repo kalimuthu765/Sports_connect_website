@@ -1,8 +1,114 @@
 import express from "express";
 import auth from "../middleware/authMiddleware.js";
 import User from "../models/User.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
+
+/* -----------------------------------------------------
+   🔹 REGISTER (Sign Up)
+----------------------------------------------------- */
+router.post("/register", async (req, res) => {
+  try {
+    const {
+      role,
+      email,
+      password,
+      fname,
+      lname,
+      name,
+      sport,
+      gender,
+      age,
+      team,
+      country,
+      state,
+      district,
+      bio,
+      avatar,
+      cricketRole,
+    } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
+      return res.status(400).json({ message: "Email already in use" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+      role,
+      email,
+      password: hashedPassword,
+      name: role === "player" ? `${fname} ${lname}` : name,
+      fname,
+      lname,
+      sport,
+      gender,
+      age,
+      team,
+      country,
+      state,
+      district,
+      bio,
+      avatar,
+      cricketRole,
+    });
+
+    await user.save();
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || "secretkey",
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      message: "User registered successfully",
+      token,
+      userId: user._id,
+      role: user.role,
+    });
+  } catch (err) {
+    console.error("Register Error:", err);
+    res.status(500).json({ message: "Registration failed" });
+  }
+});
+
+
+/* -----------------------------------------------------
+   🔹 LOGIN (Sign In)
+----------------------------------------------------- */
+/* LOGIN */
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password)
+      return res.status(400).json({ message: "Please provide email and password" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+
+    // Sign JWT
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 /* -----------------------------------------------------
    🔹 AI Recommendations (Simulated)

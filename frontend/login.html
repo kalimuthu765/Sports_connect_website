@@ -1,388 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SportsConnect - Login / Signup</title>
-    <link rel="stylesheet" href="css/style.css"> 
-    <style>
-        /* --- Base Theme Variables from style.css for local use --- */
-        :root {
-            --primary-color: #00e0ff; /* Bright Cyan/Blue */
-            --secondary-color: #5efc82; /* Bright Green */
-            --bg-dark: #0f2027; 
-            --text-primary: #e8f7ff;
-            --text-secondary: #a0c4ff;
-            --card-glass-bg: rgba(255, 255, 255, 0.08);
-            --card-border: rgba(255, 255, 255, 0.15);
-            --box-shadow-deep: 0 8px 30px rgba(0, 0, 0, 0.45);
-        }
-
-        body {
-            /* Inherits animation from style.css. Custom background removed to use theme. */
-            font-family: 'Poppins', sans-serif;
-            min-height: 100vh;
-            margin: 0;
-            padding-top: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, var(--bg-dark), var(--bg-dark)); /* Solid dark fallback */
-        }
-
-        .container {
-            /* Applying glass card style */
-            background: var(--card-glass-bg);
-            border: 1px solid var(--card-border);
-            backdrop-filter: blur(18px);
-            border-radius: 12px;
-            box-shadow: var(--box-shadow-deep);
-            padding: 40px;
-            width: 90%;
-            max-width: 400px;
-            color: var(--text-primary);
-            text-align: center;
-        }
-
-        /* Logo styling for theme visibility */
-        .container img {
-            width: 120px; 
-            height: auto;
-            margin-bottom: 15px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        h2 {
-            font-size: 2em;
-            margin-bottom: 15px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1); /* High contrast input */
-            color: var(--text-primary); /* Visible text */
-            font-size: 1em;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            border: none;
-            border-radius: 8px;
-            /* Gradient button from theme */
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); 
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        button:hover {
-            transform: translateY(-2px);
-        }
-
-        .hidden { display: none; }
-        .nav-text { font-size: 14px; margin-top: 20px; color: var(--text-secondary); }
-        .nav-text span { color: var(--primary-color); cursor: pointer; font-weight: 600; }
-        .steps { display: none; }
-        .steps.active { display: block; }
-
-        /* Label styling for date input visibility */
-        label {
-            display: block;
-            text-align: left;
-            margin-top: 10px;
-            margin-bottom: 5px;
-            font-size: 0.9em;
-            color: var(--text-secondary);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SportsConnect - Login / Signup</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #0f2027, #203a43);
+        color: #fff;
+    }
+    .container {
+        background: rgba(30,30,30,0.95);
+        padding: 35px 30px;
+        border-radius: 12px;
+        width: 360px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        text-align: center;
+    }
+    h2 {
+        margin-bottom: 20px;
+        font-size: 28px;
+        color: #00e0ff;
+    }
+    input, select, button {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 6px;
+        border: none;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+    input, select { background: #444; color: #fff; }
+    input::placeholder { color: #ccc; }
+    button { background: linear-gradient(90deg, #00e0ff, #0eff90); color: #000; cursor: pointer; font-weight: bold; }
+    button:disabled { background: #222; color: #888;}
+    button:hover:enabled { background: linear-gradient(90deg, #00b8cc, #0ecf60); }
+    .hidden { display: none; }
+    .step { display: none; }
+    .step.active { display: block; }
+    .nav-text { font-size: 14px; margin-top: 10px; color: #ccc; }
+    .nav-text span, .nav-text a { color: #00e0ff; cursor: pointer; font-weight: bold; text-decoration: none;}
+    label { float:left; margin: 0 0 3px 0; color: #bdf2ef; font-size: 13px;}
+</style>
 </head>
 <body>
-    <div class="container">
-
-        <img src="sports-palt.png" alt="SportsConnect Logo" class="logo">
-
-        <div id="login-form">
-            <h2>Login</h2>
-            <form id="actual-login-form">
-                <input type="text" id="login-email" placeholder="Email" required>
-                <input type="password" id="login-password" placeholder="Password" required>
-                <button type="submit">Login</button>
-            </form>
-            <div class="nav-text">
-                Don’t have an account? <span onclick="showSignup()">Sign up</span>
-            </div>
-        </div>
-
-        <div id="signup-form" class="hidden">
-            <h2>Signup</h2>
-            <form id="actual-signup-form">
-                <select id="role" onchange="selectRole()" required>
-                    <option value="" disabled selected>-- Select Role --</option>
-                    <option value="player">Player</option>
-                    <option value="team">Team / Club</option>
-                </select>
-
-                <div id="step1" class="steps active">
-                    <div id="player-fields" class="hidden">
-                        <input type="text" id="fname" placeholder="First Name" required>
-                        <input type="text" id="lname" placeholder="Last Name" required>
-                        <select id="gender" required>
-                            <option value="" disabled selected>Gender</option>
-                            <option>Male</option>
-                            <option>Female</option>
-                        </select>
-                        <input type="number" id="age" placeholder="Age" required>
-                        <label for="dob">Date of Birth:</label>
-                        <input type="date" id="dob" required>
-                        <select id="sport" required>
-                            <option value="" disabled selected>Select Sport</option>
-                            <option>Football</option>
-                            <option>Basketball</option>
-                            <option>Cricket</option>
-                            <option>Tennis</option>
-                            <option>Volleyball</option>
-                            <option>Kabaddi</option>
-                            <option>Hockey</option>
-                            <option>Badminton</option>
-                        </select>
-                    </div>
-
-                    <div id="team-fields" class="hidden">
-                        <input type="text" id="team-name" placeholder="Team/Club Name" required>
-                        <select id="club-sport" required>
-                            <option value="" disabled selected>Select Sport</option>
-                            <option>Football</option>
-                            <option>Basketball</option>
-                            <option>Cricket</option>
-                            <option>Tennis</option>
-                            <option>Volleyball</option>
-                            <option>Kabaddi</option>
-                            <option>Hockey</option>
-                            <option>Badminton</option>
-                        </select>
-                        <label for="club-start">Club Started On:</label>
-                        <input type="date" id="club-start" required>
-                        <input type="number" id="player-count" placeholder="Number of Players in Team" required>
-                    </div>
-                    <button type="button" onclick="nextStep(2)">Next</button>
-                </div>
-
-                <div id="step2" class="steps">
-                    <select id="country" onchange="loadStates()" required>
-                        <option value="" disabled selected>Select Country</option>
-                        <option>India</option>
-                        <option>USA</option>
-                        <option>UK</option>
-                    </select>
-
-                    <select id="state" onchange="loadDistricts()" required>
-                        <option value="" disabled selected>Select State</option>
-                    </select>
-
-                    <select id="district" required>
-                        <option value="" disabled selected>Select District</option>
-                    </select>
-
-                    <button type="button" onclick="prevStep(1)">Previous</button>
-                    <button type="button" onclick="nextStep(3)">Next</button>
-                </div>
-
-                <div id="step3" class="steps">
-                    <input type="text" id="mobile" placeholder="Mobile Number" required>
-                    <label for="photo">Upload Photo / Logo:</label>
-                    <input type="file" id="photo">
-                    <input type="email" id="email" placeholder="Email" required>
-                    <input type="password" id="password" placeholder="Password" required>
-                    <input type="password" id="confirm-password" placeholder="Confirm Password" required>
-                    <button type="button" onclick="prevStep(2)">Previous</button>
-                    <button type="submit">Sign Up</button> 
-                </div>
-            </form>
-            <div class="nav-text">
-                Already have an account? <span onclick="showLogin()">Login</span>
-            </div>
-        </div>
+<div class="container">
+    <img src="sports-palt.png" alt="logo" style="width:100px;height:140px;margin-bottom:12px;"/>
+    <h2 id="form-title">Login</h2>
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button onclick="login()">Login</button>
+        <div class="nav-text">Don't have an account? <span onclick="startSignup()">Sign up</span></div>
     </div>
 
-    <script>
-        const API_URL = "http://localhost:5000";
+    <!-- SIGNUP FORM MULTISTEP -->
+    <form id="signup-form" class="hidden" onsubmit="event.preventDefault();">
+        <!-- Step 1: Role & Basic Details -->
+        <div class="step" id="step-1">
+            <select id="signup-role" onchange="toggleRoleUI()" required>
+                <option value="" disabled selected>Select Role</option>
+                <option value="player">Player</option>
+                <option value="team">Team/Club</option>
+            </select>
+            <div id="player-basic" class="">
+                <input type="text" id="signup-fname" placeholder="First Name">
+                <input type="text" id="signup-lname" placeholder="Last Name">
+                <select id="signup-gender">
+                    <option value="" disabled selected>Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                </select>
+                <input type="number" id="signup-age" placeholder="Age">
+                <label for="signup-dob">Date of Birth:</label>
+                <input type="date" id="signup-dob">
+                <select id="signup-sport" onchange="toggleCricketRole()">
+                    <option value="" disabled selected>Select Sport</option>
+                    <option>Football</option>
+                    <option>Basketball</option>
+                    <option>Cricket</option>
+                    <option>Tennis</option>
+                    <option>Volleyball</option>
+                    <option>Kabaddi</option>
+                    <option>Hockey</option>
+                    <option>Badminton</option>
+                </select>
+                <select id="signup-cricket-role" class="hidden">
+                    <option value="" disabled selected>Select Cricket Role</option>
+                    <option>Batter</option>
+                    <option>Bowler</option>
+                    <option>All-rounder</option>
+                    <option>Wicket-keeper</option>
+                </select>
+            </div>
+            <div id="team-basic" class="hidden">
+                <input type="text" id="team-name" placeholder="Team/Club Name">
+                <select id="team-sport">
+                    <option value="" disabled selected>Select Sport</option>
+                    <option>Football</option>
+                    <option>Basketball</option>
+                    <option>Cricket</option>
+                    <option>Tennis</option>
+                    <option>Volleyball</option>
+                    <option>Kabaddi</option>
+                    <option>Hockey</option>
+                    <option>Badminton</option>
+                </select>
+                <label>Club Started On:</label>
+                <input type="date" id="team-start">
+                <input type="number" id="player-count" placeholder="Number of Players">
+            </div>
+            <button type="button" onclick="nextStep(2)">Next</button>
+        </div>
+        <!-- Step 2: Location -->
+        <div class="step" id="step-2">
+            <select id="signup-country" onchange="loadStates()" required>
+                <option value="" disabled selected>Select Country</option>
+                <option>India</option>
+                <option>USA</option>
+                <option>UK</option>
+            </select>
+            <select id="signup-state" onchange="loadDistricts()" required>
+                <option value="" disabled selected>Select State</option>
+            </select>
+            <select id="signup-district" required>
+                <option value="" disabled selected>Select District</option>
+            </select>
+            <button type="button" onclick="prevStep(1)">Previous</button>
+            <button type="button" onclick="nextStep(3)">Next</button>
+        </div>
+        <!-- Step 3: Credentials -->
+        <div class="step" id="step-3">
+            <input type="text" id="signup-mobile" placeholder="Mobile Number" required>
+            <input type="email" id="signup-email" placeholder="Email" required>
+            <input type="password" id="signup-password" placeholder="Password" required>
+            <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
+            <button type="button" onclick="prevStep(2)">Previous</button>
+            <button type="button" onclick="submitSignup()">Sign Up</button>
+        </div>
+        <div class="nav-text">Already have an account? <span onclick="resetSignup()">Login</span></div>
+    </form>
+</div>
+<script>
+const API_URL = "http://localhost:5000/api/auth";
+// Step navigation logic
+function startSignup() {
+    document.getElementById('login-form').classList.add('hidden');
+    document.getElementById('signup-form').classList.remove('hidden');
+    document.getElementById('form-title').innerText = "Signup";
+    showStep(1);
+}
+function resetSignup() {
+    document.getElementById('signup-form').reset();
+    document.getElementById('signup-form').classList.add('hidden');
+    document.getElementById('login-form').classList.remove('hidden');
+    document.getElementById('form-title').innerText = "Login";
+}
+function nextStep(n) { showStep(n); }
+function prevStep(n) { showStep(n);}
+function showStep(n) {
+    for(let i=1; i<=3; ++i) document.getElementById(`step-${i}`).classList.remove('active');
+    document.getElementById(`step-${n}`).classList.add('active');
+}
+function toggleRoleUI() {
+    const role = document.getElementById('signup-role').value;
+    document.getElementById('player-basic').classList.toggle('hidden', role!=="player");
+    document.getElementById('team-basic').classList.toggle('hidden', role!=="team");
+}
+function toggleCricketRole() {
+    const sport = document.getElementById('signup-sport').value;
+    document.getElementById('signup-cricket-role').classList.toggle('hidden', sport !== 'Cricket');
+}
+function loadStates() {
+    const country = document.getElementById('signup-country').value;
+    const stateSelect = document.getElementById('signup-state');
+    stateSelect.innerHTML = '<option value="" disabled selected>Select State</option>';
+    let states = [];
+    if(country==="India") states=["Tamil Nadu","Kerala","Karnataka"];
+    else if(country==="USA") states=["California","Texas","New York"];
+    else if(country==="UK") states=["England","Scotland","Wales"];
+    states.forEach(s => { let opt=document.createElement('option'); opt.text=s; stateSelect.add(opt); });
+    document.getElementById('signup-district').innerHTML = '<option value="" disabled selected>Select District</option>';
+}
+function loadDistricts() {
+    const state = document.getElementById('signup-state').value;
+    const districtSelect = document.getElementById('signup-district');
+    districtSelect.innerHTML = '<option value="" disabled selected>Select District</option>';
+    const map = {
+        'Tamil Nadu':['Chennai','Madurai','Coimbatore'],
+        'Kerala':['Kochi','Thiruvananthapuram'],
+        'Karnataka':['Bangalore','Mysuru'],
+        'California':['Los Angeles','San Diego'],
+        'Texas':['Houston','Dallas'],
+        'New York':['NYC','Buffalo'],
+        'England':['London','Manchester'],
+        'Scotland':['Edinburgh','Glasgow'],
+        'Wales':['Cardiff','Swansea']
+    };
+    (map[state]||[]).forEach(d=>{let opt=document.createElement('option'); opt.text=d; districtSelect.add(opt);});
+}
 
-        // --- Utility Functions ---
-        function getInputValue(id) {
-            return document.getElementById(id).value;
+// LOGIN FUNCTION
+async function login() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    if(!validateEmail(email)){ alert("Enter valid email"); return; }
+    try {
+        const res = await fetch(`${API_URL}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password}) });
+        const data = await res.json();
+        if(res.ok){ localStorage.setItem('token',data.token); localStorage.setItem('userId',data.user._id); alert("Login successful"); window.location.href="dashboard.html"; }
+        else alert(data.message || "Login failed");
+    } catch(e){ alert("Login error"); console.error(e); }
+}
+function validateEmail(email){ const re=/^[^\s@]+@[^\s@]+\.[^\s@]+$/; return re.test(email.toLowerCase()); }
+
+// FINAL SUBMIT SIGNUP
+async function submitSignup() {
+    const role = document.getElementById('signup-role').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+    const confirmPassword = document.getElementById('signup-confirm-password').value;
+    if(password!==confirmPassword){ alert("Passwords do not match"); return; }
+    if(!validateEmail(email)){ alert("Enter valid email"); return; }
+
+    // Payload creation for "player" and "team"
+    let payload = {};
+    if(role === 'player') {
+        payload = {
+            role, email, password,
+            name: document.getElementById('signup-fname').value + " " + document.getElementById('signup-lname').value,
+            gender: document.getElementById('signup-gender').value,
+            age: document.getElementById('signup-age').value,
+            dob: document.getElementById('signup-dob').value,
+            sport: document.getElementById('signup-sport').value,
+            cricketRole: document.getElementById('signup-sport').value==='Cricket' ? document.getElementById('signup-cricket-role').value : null,
+            mobile: document.getElementById('signup-mobile').value,
+            country: document.getElementById('signup-country').value,
+            state: document.getElementById('signup-state').value,
+            district: document.getElementById('signup-district').value
         }
-
-        function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(String(email).toLowerCase());
+    } else if(role === 'team') {
+        payload = {
+            role, email, password,
+            name: document.getElementById('team-name').value,
+            sport: document.getElementById('team-sport').value,
+            teamStart: document.getElementById('team-start').value,
+            playerCount: document.getElementById('player-count').value,
+            mobile: document.getElementById('signup-mobile').value,
+            country: document.getElementById('signup-country').value,
+            state: document.getElementById('signup-state').value,
+            district: document.getElementById('signup-district').value
         }
-        
-        // --- Navigation Functions ---
-        function showSignup(){
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('signup-form').classList.remove('hidden');
-        }
-        function showLogin(){
-            document.getElementById('signup-form').classList.add('hidden');
-            document.getElementById('login-form').classList.remove('hidden');
-        }
-
-        function selectRole(){
-            const role = getInputValue('role');
-            document.getElementById('player-fields').classList.toggle('hidden', role !== 'player');
-            document.getElementById('team-fields').classList.toggle('hidden', role !== 'team');
-        }
-
-        function nextStep(step){
-            document.querySelectorAll('.steps').forEach(s => s.classList.remove('active'));
-            document.getElementById('step'+step).classList.add('active');
-        }
-        function prevStep(step){
-            document.querySelectorAll('.steps').forEach(s => s.classList.remove('active'));
-            document.getElementById('step'+step).classList.add('active');
-        }
-
-        // --- Location Logic (Unchanged from original) ---
-        function loadStates(){
-            const country = getInputValue('country');
-            const state = document.getElementById('state');
-            state.innerHTML = '<option value="" disabled selected>Select State</option>';
-            const states = country === 'India' ? ['Tamil Nadu','Kerala','Karnataka'] :
-                            country === 'USA' ? ['California','Texas','New York'] :
-                            ['England','Scotland','Wales'];
-            states.forEach(s => {
-                const opt = document.createElement('option');
-                opt.textContent = s;
-                state.appendChild(opt);
-            });
-        }
-        function loadDistricts(){
-            const state = getInputValue('state');
-            const district = document.getElementById('district');
-            district.innerHTML = '<option value="" disabled selected>Select District</option>';
-            const map = {
-                'Tamil Nadu':['Chennai','Madurai','Coimbatore'],
-                'Kerala':['Kochi','Thiruvananthapuram'],
-                'Karnataka':['Bangalore','Mysuru'],
-                'California':['Los Angeles','San Diego'],
-                'Texas':['Houston','Dallas'],
-                'New York':['NYC','Buffalo'],
-                'England':['London','Manchester'],
-                'Scotland':['Edinburgh','Glasgow'],
-                'Wales':['Cardiff','Swansea']
-            };
-            (map[state] || []).forEach(d => {
-                const opt = document.createElement('option');
-                opt.textContent = d;
-                district.appendChild(opt);
-            });
-        }
-
-        // --- Core Login Function (API Integration Fix) ---
-        document.getElementById("actual-login-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const email = getInputValue("login-email");
-            const password = getInputValue("login-password");
-            
-            if (!validateEmail(email)) {
-                return alert("Please enter a valid email address.");
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/api/auth/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    // 1. Save Token and User ID (ESSENTIAL FIX)
-                    localStorage.setItem("token", data.token);
-                    localStorage.setItem("userId", data.user._id);
-                    
-                    alert("Login successful!");
-                    
-                    // 2. FIX: Redirect to the Dashboard (Fixes the video issue)
-                    window.location.href = "dashboard.html"; 
-
-                } else {
-                    alert("Login failed: " + (data.message || "Invalid credentials."));
-                }
-            } catch (error) {
-                console.error("Login attempt failed:", error);
-                alert("An error occurred. Please ensure the backend server is running.");
-            }
+    }
+    try {
+        const res = await fetch(`${API_URL}/signup`, {
+            method:'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(payload)
         });
-
-
-        // --- Core Signup Function (API Integration Skeleton) ---
-        document.getElementById("actual-signup-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const role = getInputValue("role");
-            const email = getInputValue("email");
-            const password = getInputValue("password");
-            const confirmPassword = getInputValue("confirm-password");
-
-            if(password !== confirmPassword){
-                alert("Passwords do not match!");
-                return;
-            }
-            if (!validateEmail(email)) {
-                return alert("Please enter a valid email address.");
-            }
-            // Basic data collection (photo upload logic is complex and omitted for this fix)
-            const payload = {
-                name: role === 'player' ? `${getInputValue('fname')} ${getInputValue('lname')}` : getInputValue('team-name'),
-                email,
-                password,
-                role,
-                country: getInputValue('country'),
-                state: getInputValue('state'),
-                district: getInputValue('district'),
-                mobile: getInputValue('mobile'),
-                sport: role === 'player' ? getInputValue('sport') : getInputValue('club-sport'),
-                // ... other fields
-            };
-            
-            try {
-                const res = await fetch(`${API_URL}/api/auth/signup`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    // Log in immediately after successful signup
-                    localStorage.setItem("token", data.token);
-                    localStorage.setItem("userId", data.user._id);
-                    alert("Signup successful! Redirecting to Dashboard.");
-                    window.location.href = "dashboard.html";
-                } else {
-                    alert("Signup failed: " + (data.message || "Please check all fields."));
-                }
-            } catch (error) {
-                console.error("Signup attempt failed:", error);
-                alert("An error occurred during signup.");
-            }
-        });
-    </script>
+        const data = await res.json();
+        if(res.ok){ localStorage.setItem('token',data.token); localStorage.setItem('userId',data.user._id); alert("Signup successful"); window.location.href="dashboard.html"; }
+        else alert(data.message || "Signup failed");
+    } catch(e){ alert("Signup error"); console.error(e); }
+}
+</script>
 </body>
 </html>

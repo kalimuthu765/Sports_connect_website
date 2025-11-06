@@ -1,613 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Dashboard - SportsConnect</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-/* Base Colors & Variables (MATCHING style.css for consistency) */
-:root {
-    --primary-blue: #00e0ff; /* Bright Cyan/Blue for accents */
-    --secondary-color: #5efc82; /* Bright Green for secondary accents */
-    --text-light: #e8f7ff; /* CRUCIAL: High Visibility Off-white for main text */
-    --text-secondary: #a0c4ff; /* Lighter blue for secondary text/labels */
-    --bg-dark: #0f2027; 
-    --bg-mid: #203a43;
-    --bg-light: #2c5364;
-    --card-light-glass: rgba(255, 255, 255, 0.08);
-    --card-dark-glass: rgba(0, 0, 0, 0.3);
-    --border-color: rgba(255, 255, 255, 0.15);
-    --shadow-deep: 0 8px 30px rgba(0, 0, 0, 0.6);
-    --soft-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+:root{
+  --primary-blue:#00e0ff;
+  --secondary-color:#5efc82;
+  --text-light:#e8f7ff;
+  --text-secondary:#a0c4ff;
+  --bg-dark:#0f2027;
+  --bg-mid:#203a43;
 }
 
-/* Global Styles */
-body {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    color: var(--text-light);
-    min-height: 100vh;
-    /* Animated gradient background */
-    background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid), var(--bg-light));
-    background-size:200% 200%;
-    animation: gradientShift 8s ease infinite;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    padding-top: 70px; /* Space for fixed navbar */
-}
-@keyframes gradientShift{
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
+/* reset + base */
+*{box-sizing:border-box}
+body{
+  font-family:'Poppins',sans-serif;
+  margin:0;padding:0;
+  color:var(--text-light);
+  background:linear-gradient(135deg,var(--bg-dark),var(--bg-mid));
+  background-size:200% 200%;
+  min-height:100vh;
+  padding-top:72px; /* allow navbar space */
 }
 
-/* Navbar */
-.navbar {
-    background: rgba(15, 32, 39, 0.9);
-    backdrop-filter: blur(10px); 
-    padding: 15px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
-    position: fixed; 
-    top: 0;
-    width: 100%;
-    z-index: 100;
-    border-bottom: 2px solid var(--primary-blue); 
+/* NAVBAR */
+.navbar{
+  position:fixed;top:0;left:0;right:0;
+  height:64px;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 36px;background:rgba(15,32,39,0.95);backdrop-filter:blur(8px);
+  border-bottom:2px solid var(--primary-blue);z-index:140;
 }
-.navbar-brand {
-    font-size: 28px; font-weight: bold;
-    color: var(--primary-blue);
-    text-decoration: none;
-    letter-spacing: 0.5px;
+.navbar-brand{ color:var(--primary-blue); font-weight:700; font-size:22px; text-decoration:none; }
+.navbar-links{ display:flex; gap:18px; align-items:center; white-space:nowrap; }
+.navbar-links a, .navbar-links button { color:var(--text-light); text-decoration:none; background:none; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px; font-weight:500; }
+.btn { padding:10px 18px; border-radius:8px; border:none; font-weight:700; cursor:pointer; background:linear-gradient(90deg,var(--primary-blue),var(--secondary-color)); color:#000; box-shadow:0 6px 18px rgba(0,224,255,0.12); transition:all .18s ease; }
+.btn:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,224,255,0.20); }
+.btn-sm{ padding:8px 14px; font-size:.95rem; }
+
+/* main layout */
+.container{ max-width:1400px; margin:28px auto; display:flex; gap:24px; padding:0 18px; align-items:flex-start; }
+main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
+
+/* card base - glass */
+.card{
+  background:linear-gradient(180deg, rgba(8,18,22,0.55), rgba(6,12,14,0.48));
+  border:1px solid rgba(0,224,255,0.14);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.55), 0 0 10px rgba(0,224,255,0.05);
+  backdrop-filter: blur(10px) saturate(140%);
+  transition:all .22s ease;
 }
-.navbar-links {
-    display: flex;
-    gap: 20px;
+.card:hover{ box-shadow:0 16px 40px rgba(0,0,0,0.6), 0 0 18px rgba(94,252,130,0.16); border-color:rgba(94,252,130,0.25); transform:translateY(-4px); }
+.card h2, .card h3{ margin:0 0 14px 0; color:var(--text-light); display:flex; align-items:center; gap:10px; }
+
+/* PROFILE CARD - GLASS GRADIENT */
+#dashboard-profile-header{
+  padding:22px;
+  border-radius:16px;
+  background:linear-gradient(135deg, rgba(0,224,255,0.04), rgba(94,252,130,0.03));
+  border:1px solid rgba(0,224,255,0.22);
+  box-shadow:0 10px 30px rgba(0,0,0,0.55), 0 0 20px rgba(0,224,255,0.08);
 }
-.navbar a {
-    text-decoration: none; color: var(--text-light);
-    margin: 0 15px; font-weight: 500;
-    transition: color 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
+.profile-main-area{ display:flex; gap:18px; align-items:center; }
+.dash-avatar{ width:86px; height:86px; border-radius:50%; object-fit:cover; border:3px solid var(--primary-blue); box-shadow:0 0 18px rgba(0,224,255,0.55); }
+.dash-info h3{ margin:0; font-size:1.4rem; color:var(--text-light); }
+.dash-info p{ margin:0; color:var(--text-secondary); text-transform:lowercase; font-size:0.95rem; }
+.dash-stats{ display:flex; gap:22px; margin-top:14px; border-top:1px solid rgba(255,255,255,0.04); padding-top:12px; align-items:center; }
+.dash-stat-item{ cursor:pointer; text-align:left; }
+.dash-stat-item strong{ display:block; color:var(--primary-blue); font-size:1.05rem; }
+.dash-stat-item span{ color:var(--text-secondary); font-size:0.85rem; }
+
+/* View followers & following buttons */
+.dash-stat-actions{ display:flex; gap:10px; margin-top:12px; }
+.link-small{ background:rgba(0,224,255,0.06); border:1px solid rgba(0,224,255,0.12); color:var(--text-light); padding:8px 10px; border-radius:8px; cursor:pointer; font-weight:700; }
+
+/* My Team card (kept simple) */
+#team-info-card{ padding:18px; }
+
+/* FEED with internal scroll */
+.feed-card{ display:flex; flex-direction:column; gap:12px; }
+#feed{ max-height:62vh; overflow-y:auto; padding-right:8px; }
+#feed::-webkit-scrollbar{ width:9px; }
+#feed::-webkit-scrollbar-thumb{ background:linear-gradient(180deg, rgba(0,224,255,0.12), rgba(94,252,130,0.12)); border-radius:8px; border:2px solid rgba(0,0,0,0.1); }
+.post{ background:rgba(255,255,255,0.06); padding:14px; margin-bottom:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); }
+.post-header{ color:var(--secondary-color); font-weight:800; margin-bottom:8px; }
+
+/* RECOMMENDED (keeps glass look) */
+#recommended-list{ display:flex; flex-direction:column; gap:10px; padding:6px 0; }
+#recommended-list li{ display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(0,224,255,0.03), rgba(0,0,0,0.02)); border:1px solid rgba(0,224,255,0.08); }
+.reco-left{ display:flex; align-items:center; gap:10px; }
+.reco-left img{ width:36px; height:36px; border-radius:50%; border:2px solid var(--primary-blue); }
+.reco-name{ color:var(--primary-blue); font-weight:700; text-decoration:none; }
+
+/* ====== LIVE TOURNAMENTS (RESTORED / STYLED) ====== */
+#tournaments-list{
+  display:flex; flex-direction:column; gap:12px; padding:8px 0;
 }
-.navbar a:last-child {
-    margin-right: 0; /* Ensures Logout is not cut off */
+#tournaments-list li{
+  padding:12px 16px;
+  border-radius:12px;
+  background:linear-gradient(180deg, rgba(8,18,24,0.45), rgba(12,26,32,0.38));
+  border:1px solid rgba(0,224,255,0.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(0,0,0,0.45);
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  transition: all .18s ease;
 }
-.navbar a:hover { 
-    color: var(--primary-blue); 
-    text-shadow: 0 0 8px rgba(0, 224, 255, 0.7);
+#tournaments-list li a{ color:var(--text-light); text-decoration:none; font-weight:600; }
+#tournaments-list li:hover{
+  transform:translateY(-4px);
+  border-color:rgba(94,252,130,0.3);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.55), 0 0 18px rgba(0,224,255,0.08);
+  background: linear-gradient(180deg, rgba(0,224,255,0.02), rgba(94,252,130,0.02));
 }
 
-/* Main Layout Container */
-.container {
-    display: flex;
-    flex-grow: 1;
-    max-width: 1400px;
-    margin: 30px auto;
-    gap: 25px;
-    padding: 0 20px;
-    align-items: flex-start;
-}
-main { flex: 2; }
-aside { flex: 1; display: flex; flex-direction: column; gap: 25px; }
+/* small tournament pill (optional visual) */
+.tourn-pill{ padding:6px 10px; border-radius:999px; font-weight:700; background:rgba(0,0,0,0.25); color:var(--text-secondary); border:1px solid rgba(255,255,255,0.03); }
 
-/* --- PROFILE HEADER (Left Column) --- */
-#dashboard-profile-header {
-    background-color: var(--card-light-glass); 
-    backdrop-filter: blur(15px);
-    border-radius: 18px;
-    padding: 25px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    color: var(--text-light);
-    box-shadow: 0 0 20px rgba(0, 224, 255, 0.3), var(--shadow-deep); 
-    border: 1px solid var(--primary-blue);
+/* MODALS: post & follow */
+.modal-overlay{ display:none; position:fixed; inset:0; z-index:160; background:rgba(0,0,0,0.75); justify-content:center; align-items:center; }
+.modal-box{
+  width:92%; max-width:540px;
+  background:linear-gradient(135deg, rgba(12,22,28,0.95), rgba(0,0,0,0.55));
+  padding:22px; border-radius:14px; border:1px solid rgba(0,224,255,0.2); box-shadow:0 10px 30px rgba(0,0,0,0.6);
 }
-.profile-main-area {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-.dash-avatar {
-    width: 80px; height: 80px;
-    border-radius: 50%; object-fit: cover;
-    flex-shrink: 0;
-    border: 3px solid var(--primary-blue);
-    box-shadow: 0 0 10px rgba(0, 224, 255, 0.5);
-}
-.dash-info {
-    flex-grow: 1;
-    min-width: 0;
-}
-.dash-info h3 {
-    margin: 0 0 3px 0;
-    font-size: 2em; 
-    font-weight: 700;
-    color: var(--text-light); /* High visibility */
-}
-.dash-info p {
-    margin: 0;
-    color: var(--text-secondary); /* High visibility */
-    font-size: 0.95em;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.dash-stats {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding-top: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-.dash-stat-item strong {
-    color: var(--primary-blue); /* Bright accent color for numbers */
-}
-.dash-stat-item span {
-    color: var(--text-secondary); /* Visible secondary color for labels */
-}
+.modal-box h3{ color:var(--secondary-color); margin:0 0 12px 0; }
+.modal-close{ float:right; cursor:pointer; color:var(--text-light); font-size:1.4rem; }
+.modal-list{ max-height:56vh; overflow-y:auto; padding-right:6px; margin-top:8px; }
+.fuser{ display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.03); }
+.fuser img{ width:44px; height:44px; border-radius:50%; border:2px solid var(--primary-blue); }
 
-/* --- GENERAL CARD STYLES --- */
-.card {
-    padding: 25px;
-    border-radius: 18px;
-    box-shadow: var(--shadow-deep);
-    opacity: 0;
-    animation: fadeIn 0.8s forwards;
-    color: var(--text-light);
-    backdrop-filter: blur(12px) saturate(180%);
-    border: 1px solid var(--border-color); 
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    background-color: var(--card-dark-glass);
-}
-.card:hover {
-    transform: translateY(-3px); 
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
-}
-.card h3, .card h2 { 
-    color: var(--text-light); 
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1); 
-    padding-bottom: 12px;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.8em;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-/* Icon Styling for Cool Look */
-.card h3 i, .card h2 i {
-    color: var(--primary-blue);
-    font-size: 1.2em;
-}
-
-/* --- MAIN SOCIAL FEED CARD --- */
-main .card { 
-    background-color: rgba(0, 0, 0, 0.3); 
-    border: 1px solid var(--primary-blue); 
-    box-shadow: 0 0 15px rgba(0, 224, 255, 0.2), var(--shadow-deep);
-}
-
-/* --- TEAM INFO CARD --- */
-#team-info-card, #team-requests-card {
-    background-color: var(--card-light-glass); 
-    border: 1px solid rgba(0, 224, 255, 0.5); 
-}
-#team-info-card h3 i, #team-requests-card h3 i {
-    color: var(--secondary-color); /* Secondary color for Team icons */
-}
-
-/* --- POSTS INSIDE FEED (High Contrast) --- */
-.post {
-    background: rgba(255, 255, 255, 0.12); /* Brighter contrast background for better visibility */
-    padding: 15px; 
-    margin-bottom: 10px; 
-    border-radius: 10px;
-    color: var(--text-light); 
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: background 0.3s ease;
-}
-.post:hover {
-    background: rgba(255, 255, 255, 0.18); 
-}
-.post-header { 
-    font-weight: bold; margin-bottom: 5px; 
-    color: var(--secondary-color); /* Visible username color */
-    font-size: 1.1em;
-}
-.post p {
-    margin: 0;
-    font-size: 0.95em;
-    color: var(--text-light); /* Ensure post text is bright */
-}
-
-/* --- ITEM LISTS --- */
-.item-list li {
-    padding: 10px 12px; 
-    margin-bottom: 8px; 
-    display: flex; justify-content: space-between; 
-    align-items: center;
-    background: rgba(255, 255, 255, 0.08); /* Better contrast list items */
-    border-radius: 8px; 
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* --- Buttons (Cool Gradient) --- */
-.btn {
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(90deg, var(--primary-blue), var(--secondary-color)); /* Gradient button */
-  color: #000; /* Black text on bright button for max visibility */
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.btn:hover {
-    transform: translateY(-2px);
-}
-.btn-sm {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-}
-
-/* --- Feed Update Button Override (for consistency) --- */
-.card > .btn {
-    /* Apply the full gradient to the "Click here to share an update" button */
-    background: linear-gradient(90deg, var(--primary-blue), var(--secondary-color));
-    color: #000;
-}
-
-/* --- MODAL FIX: HIDE BY DEFAULT --- */
-.post-modal {
-    display: none; /* FIX 1: Hides modal when page loads */
-    position: fixed; 
-    z-index: 101;
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%;
-    background-color: rgba(0,0,0,0.85); 
-    justify-content: center;
-    align-items: center; 
-}
-.post-modal-content {
-    background-color: var(--bg-mid); /* Solid dark background for modal */
-    color: var(--text-light);
-    padding: 30px; 
-    border-radius: 18px;
-    width: 90%; max-width: 550px;
-    position: relative;
-    box-shadow: var(--shadow-deep);
-    border: 1px solid var(--primary-blue);
-    backdrop-filter: blur(8px); 
-    animation: slideInFromTop 0.3s ease-out forwards;
-}
-.post-modal-content textarea {
-    background-color: rgba(0, 0, 0, 0.4); 
-    color: var(--text-light);
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideInFromTop {
-    from { transform: translateY(-100px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-
-/* Responsive Styles */
-@media (max-width: 992px) {
-    .container { flex-direction: column; margin-top: 20px; gap: 20px;}
-}
-@media (max-width: 600px) {
-    .navbar { padding: 15px 20px; }
-    .dash-info h3 { font-size: 1.8em; }
+/* responsive */
+@media (max-width: 992px){
+  .container{ flex-direction:column; padding:0 12px; margin-top:18px; }
+  .navbar{ padding:12px 18px; }
+  #dashboard-profile-header{ padding:16px; }
 }
 </style>
 </head>
 <body>
 
 <nav class="navbar">
-    <a href="dashboard.html" class="navbar-brand">SportsConnect</a>
-    <div class="navbar-links">
-        <a href="create-tournament.html" id="create-tournament-link" style="display: none;"><i class="fas fa-trophy"></i> Create Tournament</a>
-        <button class="btn btn-sm" onclick="openPostModal()"><i class="fas fa-edit"></i> Start a Post</button>
-        <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
-        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a> 
-    </div>
+  <a class="navbar-brand" href="dashboard.html">SportsConnect</a>
+  <div class="navbar-links">
+    <button class="btn btn-sm" onclick="openPostModal()"><i class="fas fa-edit"></i> Start a Post</button>
+    <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
+    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
 </nav>
 
-<div id="postModal" class="post-modal">
-    <div class="post-modal-content">
-        <span class="close-button" onclick="closePostModal()">&times;</span>
-        <h3>Create New Post</h3>
-        <textarea id="modal-post-caption" placeholder="What's on your mind?"></textarea>
-        <div class="post-modal-actions">
-            <button class="btn" onclick="createPostFromModal()">Post</button>
-        </div>
-    </div>
+<!-- POST MODAL -->
+<div id="postModal" class="modal-overlay" aria-hidden="true">
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <span class="modal-close" onclick="closePostModal()">&times;</span>
+    <h3>Create New Post</h3>
+    <textarea id="modal-post-caption" placeholder="What's on your mind?" style="width:100%;min-height:110px;border-radius:8px;border:1px solid rgba(0,224,255,0.12);background:rgba(0,0,0,0.45);color:var(--text-light);padding:10px;"></textarea>
+    <div style="margin-top:12px;"><button class="btn" onclick="createPostFromModal()">Post</button></div>
+  </div>
+</div>
+
+<!-- FOLLOWERS / FOLLOWING MODAL -->
+<div id="followModal" class="modal-overlay" aria-hidden="true">
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <span class="modal-close" onclick="closeFollowModal()">&times;</span>
+    <h3 id="followModalTitle">Followers</h3>
+    <div id="followList" class="modal-list"><p style="color:var(--text-secondary);">Loading...</p></div>
+  </div>
 </div>
 
 <div class="container">
-    <aside>
-        <div id="dashboard-profile-header">
-             <p style="width: 100%; text-align: center;">Loading profile...</p>
-        </div>
-        
-        <div class="card" id="team-info-card" style="animation-delay: 0.1s;">
-            </div>
-        
-        <div class="card" id="team-requests-card" style="display:none; animation-delay: 0.2s;">
-            <h3><i class="fas fa-user-plus"></i> Join Requests</h3>
-            <ul id="join-requests-list" class="item-list"></ul>
-        </div>
-    </aside>
+  <!-- LEFT: profile + my team -->
+  <aside>
+    <div id="dashboard-profile-header" class="card">
+      <p style="color:var(--text-secondary);">Loading profile...</p>
+    </div>
 
-    <main>
-        <div class="card" style="animation-delay: 0.1s;">
-            <h2><i class="fas fa-bullhorn"></i> Social Feed</h2> 
-            <button class="btn btn-sm" style="width: 100%; margin-bottom: 20px;" onclick="openPostModal()">Click here to share an update</button>
-            <div id="feed"><p>Loading feed...</p></div>
-        </div>
-    </main>
+    <div id="team-info-card" class="card">
+      <h3><i class="fas fa-shield-alt"></i> My Team</h3>
+      <div id="player-team-status"><p style="color:var(--text-secondary);">Loading...</p></div>
+    </div>
+  </aside>
 
-    <aside>
-        <div class="card" style="animation-delay: 0.3s;">
-            <h3><i class="fas fa-medal"></i> Live Tournaments</h3> 
-            <ul class="item-list" id="tournaments-list"><p>Loading tournaments...</p></ul>
-        </div>
-        <div class="card" style="animation-delay: 0.4s;">
-            <h3><i class="fas fa-handshake"></i> Recommended</h3>
-            <ul class="item-list" id="recommended-list">
-                <p>Loading recommendations...</p></ul>
-        </div>
-    </aside>
+  <!-- MAIN: social feed -->
+  <main>
+    <div class="card feed-card">
+      <h2><i class="fas fa-bullhorn"></i> Social Feed</h2>
+      <button class="btn btn-sm" style="width:100%; margin-bottom:14px;" onclick="openPostModal()">Click here to share an update</button>
+      <div id="feed"><p style="color:var(--text-secondary);">Loading feed...</p></div>
+    </div>
+  </main>
+
+  <!-- RIGHT: tournaments + recommended -->
+  <aside>
+    <div class="card">
+      <h3><i class="fas fa-medal"></i> Live Tournaments</h3>
+      <ul id="tournaments-list" class="item-list">
+        <p style="color:var(--text-secondary); margin:0;">Loading tournaments...</p>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><i class="fas fa-handshake"></i> Recommended</h3>
+      <ul id="recommended-list" class="item-list">
+        <p style="color:var(--text-secondary); margin:0;">Loading recommendations...</p>
+      </ul>
+    </div>
+  </aside>
 </div>
 
 <script>
+/* Auth + helper */
 const token = localStorage.getItem("token");
 const userId = localStorage.getItem("userId");
 if (!token || !userId) {
-    window.location.href = "index.html";
+  window.location.href = "index.html";
 }
-
 function logout(){
-    localStorage.clear();
-    window.location.href="index.html";
+  localStorage.clear();
+  window.location.href = "index.html";
+}
+async function apiRequest(endpoint, method = 'GET', body = null){
+  const opts = { method, headers: { 'Authorization': 'Bearer ' + token } };
+  if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  const res = await fetch(`http://localhost:5000${endpoint}`, opts);
+  if (!res.ok) {
+    // try to return helpful message
+    try { const j = await res.json(); throw new Error(j.message || 'API request failed'); } catch (e) { throw new Error('API request failed'); }
+  }
+  return res.status === 204 ? null : res.json();
 }
 
-async function apiRequest(endpoint, method = 'GET', body = null) {
-    const options = {
-        method,
-        headers: { 'Authorization': 'Bearer ' + token }
-    };
-    if (body) {
-        options.headers['Content-Type'] = 'application/json';
-        options.body = JSON.stringify(body);
-    }
-    const response = await fetch(`http://localhost:5000${endpoint}`, options);
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
-        throw new Error(errorData.message || 'API request failed');
-    }
-    return response.status === 204 ? null : response.json();
-}
-
-async function loadProfile() {
-    try {
-        const user = await apiRequest('/api/users/me');
-        const profileHeader = document.getElementById('dashboard-profile-header');
-
-        const avatarSrc = user.avatar && user.avatar.trim() !== "" 
-            ? user.avatar 
-            : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=80&background=00e0ff&color=fff&bold=true`;
-
-        profileHeader.innerHTML = `
-            <div class="profile-main-area">
-                <img src="${avatarSrc}" alt="Profile" class="dash-avatar">
-                <div class="dash-info">
-                    <h3>${user.name}</h3>
-                    <p>${user.bio || (user.role === 'team' ? 'Team/Club' : 'Player')}</p>
-                </div>
-            </div>
-            <div class="dash-stats">
-                <div class="dash-stat-item">
-                    <strong>${user.posts?.length || 0}</strong>
-                    <span>Posts</span>
-                </div>
-                <div class="dash-stat-item">
-                    <strong>${user.followers?.length || 0}</strong>
-                    <span>Followers</span>
-                </div>
-                <div class="dash-stat-item">
-                    <strong>${user.following?.length || 0}</strong>
-                    <span>Following</span>
-                </div>
-            </div>
-        `;
-        profileHeader.style.opacity = 1;
-
-        if (user.role === 'team') {
-            document.getElementById('create-tournament-link').style.display = 'inline';
-            loadTeamJoinRequests();
-        }
-
-        loadRoleSpecificInfo(user);
-    } catch (error) {
-        console.error('Failed to load profile:', error);
-        document.getElementById('dashboard-profile-header').innerHTML = '<p style="color:red;">Could not load profile.</p>';
-    }
-}
-
-async function loadRoleSpecificInfo(user) {
-    const infoCard = document.getElementById('team-info-card');
-    if (user.role === 'team') {
-        infoCard.innerHTML = '<h3><i class="fas fa-users"></i> Our Players</h3><ul class="item-list" id="player-list">Loading...</ul>';
-        const players = await apiRequest(`/api/users/${user._id}/players`).catch(() => []);
-        const playerList = document.getElementById('player-list');
-        playerList.innerHTML = players.length > 0 ? players.map(p => `<li><a href="profile.html?id=${p._id}">${p.name}</a></li>`).join('') : '<p>No players on this team yet.</p>';
-    } else if (user.role === 'player') {
-        infoCard.innerHTML = `<h3><i class="fas fa-shield-alt"></i> My Team</h3><div id="player-team-status">Loading...</div>`;
-        const statusDiv = document.getElementById('player-team-status');
-        if (user.team) {
-            statusDiv.innerHTML = `<ul class="item-list"><li><a href="profile.html?id=${user.team._id}">${user.team.name}</a></li></ul>`;
+/* Profile + My Team */
+async function loadProfile(){
+  try{
+    const user = await apiRequest('/api/users/me');
+    const avatarSrc = user.avatar && user.avatar.trim() !== "" ? user.avatar : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=128&background=00e0ff&color=fff&bold=true`;
+    document.getElementById('dashboard-profile-header').innerHTML = `
+      <div class="profile-main-area">
+        <img class="dash-avatar" src="${avatarSrc}" alt="avatar">
+        <div class="dash-info">
+          <h3>${escapeHtml(user.name)}</h3>
+          <p>${user.role === 'team' ? 'Team / Club' : 'player'}</p>
+          <div class="dash-stats">
+            <div class="dash-stat-item" onclick="showFollowers()"><strong>${user.followers?.length || 0}</strong><span>Followers</span></div>
+            <div class="dash-stat-item" onclick="showFollowing()"><strong>${user.following?.length || 0}</strong><span>Following</span></div>
+            <div class="dash-stat-item"><strong>${user.posts?.length || 0}</strong><span>Posts</span></div>
+          </div>
+          <div class="dash-stat-actions">
+            <button class="link-small" onclick="showFollowers()">View Followers</button>
+            <button class="link-small" onclick="showFollowing()">View Following</button>
+          </div>
+        </div>
+      </div>
+    `;
+    // My Team card
+    const teamCard = document.getElementById('team-info-card');
+    if (user.role === 'team'){
+      // attempt to load players (if endpoint exists)
+      try {
+        const players = await apiRequest(`/api/users/${user._id}/players`).catch(()=>[]);
+        if (players && players.length){
+          teamCard.innerHTML = `<h3><i class="fas fa-shield-alt"></i> My Team</h3><ul class="item-list">${players.map(p => `<li style="padding:8px 10px;border-radius:8px;"><a href="profile.html?id=${p._id}" style="color:var(--text-light); text-decoration:none;">${escapeHtml(p.name)}</a></li>`).join('')}</ul>`;
         } else {
-            const teamRequest = user.joinRequests?.find(r => r.player.toString() === userId);
-            if (teamRequest) {
-                statusDiv.innerHTML = `<p>Your request to join a team is **${teamRequest.status}**.</p>`;
-            } else {
-                statusDiv.innerHTML = `<button class="btn" onclick="findTeam()">Find a Team</button>`;
-            }
+          teamCard.innerHTML = `<h3><i class="fas fa-shield-alt"></i> My Team</h3><p style="color:var(--text-secondary);">No players yet.</p>`;
         }
+      } catch(e){
+        teamCard.innerHTML = `<h3><i class="fas fa-shield-alt"></i> My Team</h3><p style="color:var(--text-secondary);">Could not load players.</p>`;
+      }
+    } else {
+      if (user.team){
+        teamCard.innerHTML = `<h3><i class="fas fa-shield-alt"></i> My Team</h3><ul class="item-list"><li style="padding:8px 10px;border-radius:8px;"><a href="profile.html?id=${user.team._id}" style="color:var(--text-light); text-decoration:none;">${escapeHtml(user.team.name)}</a></li></ul>`;
+      } else {
+        teamCard.innerHTML = `<h3><i class="fas fa-shield-alt"></i> My Team</h3><div style="margin-top:10px;"><button class="btn" onclick="findTeam()">Find a Team</button></div>`;
+      }
     }
+  } catch (err){
+    console.error('Failed to load profile', err);
+    document.getElementById('dashboard-profile-header').innerHTML = `<p style="color:tomato">Could not load profile.</p>`;
+  }
 }
 
-async function loadFeed() {
-    try {
-        const posts = await apiRequest('/api/posts/feed');
-        const feedDiv = document.getElementById('feed');
-        feedDiv.style.maxHeight = '60vh'; 
-        feedDiv.style.overflowY = 'auto'; 
+/* Followers / Following modal */
+function openFollowModal(title, users){
+  document.getElementById('followModalTitle').textContent = title;
+  const list = document.getElementById('followList');
+  if (!users || users.length === 0) {
+    list.innerHTML = `<p style="color:var(--text-secondary)">No users found.</p>`;
+  } else {
+    list.innerHTML = users.map(u => `
+      <div class="fuser">
+        <img src="${u.avatar ? encodeURI(u.avatar) : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.name) + '&size=64&background=00e0ff&color=fff'}" alt="avatar">
+        <div><a href="profile.html?id=${u._id}" style="color:var(--text-light); text-decoration:none; font-weight:700">${escapeHtml(u.name)}</a></div>
+      </div>
+    `).join('');
+  }
+  openModal('followModal');
+}
+async function showFollowers(){
+  try{
+    const me = await apiRequest('/api/users/me');
+    openFollowModal('Followers', me.followers || []);
+  } catch(e) { alert('Could not load followers.'); console.error(e); }
+}
+async function showFollowing(){
+  try{
+    const me = await apiRequest('/api/users/me');
+    openFollowModal('Following', me.following || []);
+  } catch(e) { alert('Could not load following.'); console.error(e); }
+}
+function closeFollowModal(){ closeModal('followModal'); }
 
-        feedDiv.innerHTML = posts.length > 0 ? posts.map(p => `
-            <div class="post">
-                <div class="post-header">${p.user.name}</div>
-                <p>${p.caption}</p>
-            </div>
-        `).join('') : '<p>Your feed is empty. Follow others to see their posts!</p>';
-    } catch (error) {
-        document.getElementById('feed').innerHTML = '<p style="color:red;">Could not load feed.</p>';
+/* Feed */
+async function loadFeed(){
+  try{
+    const posts = await apiRequest('/api/posts/feed');
+    const feed = document.getElementById('feed');
+    if (!posts || posts.length === 0) {
+      feed.innerHTML = `<p style="color:var(--text-secondary)">Your feed is empty.</p>`;
+      return;
     }
+    feed.innerHTML = posts.map(p => `
+      <div class="post">
+        <div class="post-header">${escapeHtml(p.user?.name || 'User')}</div>
+        <div class="post-body"><p style="margin:0;color:var(--text-light)">${escapeHtml(p.caption || '')}</p></div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.error('Failed to load feed', e);
+    document.getElementById('feed').innerHTML = `<p style="color:tomato">Could not load feed.</p>`;
+  }
 }
 
-function openPostModal() { 
-    const modal = document.getElementById('postModal');
-    modal.style.display = 'flex'; 
-}
-function closePostModal() { 
-    document.getElementById('postModal').style.display = 'none'; 
+/* Post modal */
+function openPostModal(){ openModal('postModal'); }
+function closePostModal(){ closeModal('postModal'); }
+async function createPostFromModal(){
+  const captionEl = document.getElementById('modal-post-caption');
+  const caption = (captionEl.value || '').trim();
+  if (!caption) return alert('Post cannot be empty.');
+  try {
+    await apiRequest('/api/posts', 'POST', { caption });
+    captionEl.value = '';
+    closePostModal();
+    await loadFeed();
+    await loadProfile();
+  } catch (e) { alert('Failed to create post.'); console.error(e); }
 }
 
-async function createPostFromModal() {
-    const caption = document.getElementById('modal-post-caption').value.trim();
-    if (!caption) return alert('Post cannot be empty.');
-    try {
-        await apiRequest('/api/posts', 'POST', { caption });
-        document.getElementById('modal-post-caption').value = ''; 
-        closePostModal();
-        loadFeed();
-        loadProfile(); 
-    } catch (error) {
-        alert('Failed to create post: ' + error.message);
+/* Tournaments (restored visually + load) */
+async function loadTournaments(){
+  try{
+    const tournaments = await apiRequest('/api/tournaments');
+    const el = document.getElementById('tournaments-list');
+    if (!tournaments || tournaments.length === 0) {
+      el.innerHTML = `<p style="color:var(--text-secondary)">No tournaments available.</p>`; return;
     }
+    el.innerHTML = tournaments.map(t => `
+      <li>
+        <a href="tournament-details.html?id=${t._id}">${escapeHtml(t.name)}</a>
+        ${t.status ? `<span class="tourn-pill" style="background:${t.status === 'live' ? 'rgba(94,252,130,0.08)' : 'rgba(0,224,255,0.03)'}; border-color: rgba(0,224,255,0.06); color:${t.status === 'live' ? 'var(--secondary-color)' : 'var(--text-secondary)'}">${escapeHtml(capitalize(t.status))}</span>` : ''}
+      </li>
+    `).join('');
+  } catch (e) {
+    console.error('Failed to load tournaments', e);
+    document.getElementById('tournaments-list').innerHTML = `<p style="color:tomato">Could not load tournaments.</p>`;
+  }
 }
 
-async function loadTournaments() {
-    try {
-        const tournaments = await apiRequest('/api/tournaments');
-        const list = document.getElementById('tournaments-list');
-        list.innerHTML = tournaments.length > 0 ? tournaments.map(t => `
-            <li><a href="tournament-details.html?id=${t._id}">${t.name}</a></li>
-        `).join('') : '<p>No tournaments available.</p>';
-    } catch(error) {
-        document.getElementById('tournaments-list').innerHTML = '<p style="color:red;">Could not load tournaments.</p>';
-    }
+/* Recommendations */
+async function loadRecommendations(){
+  try{
+    const recs = await apiRequest('/api/users/recommendations');
+    const el = document.getElementById('recommended-list');
+    if (!recs || recs.length === 0) { el.innerHTML = `<p style="color:var(--text-secondary)">No recommendations right now.</p>`; return; }
+    el.innerHTML = recs.map(u => `
+      <li>
+        <div class="reco-left">
+          <img src="${u.avatar ? encodeURI(u.avatar) : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.name) + '&size=64&background=00e0ff&color=fff'}" alt="avatar">
+          <a class="reco-name" href="profile.html?id=${u._id}">${escapeHtml(u.name)}</a>
+        </div>
+        <div><button class="btn btn-sm" onclick="followUser('${u._id}', this)">Follow</button></div>
+      </li>
+    `).join('');
+  } catch (e) {
+    console.error('Failed to load recommendations', e);
+    document.getElementById('recommended-list').innerHTML = `<p style="color:tomato">Could not load recommendations.</p>`;
+  }
 }
 
-async function followUser(userIdToFollow, buttonElement) {
-    try {
-        buttonElement.disabled = true;
-        await apiRequest(`/api/users/${userIdToFollow}/follow`, 'POST');
-        buttonElement.textContent = 'Following';
-    } catch (error) {
-        alert('Could not follow user. Please try again.');
-        buttonElement.disabled = false;
-    }
+/* follow user */
+async function followUser(uid, btn){
+  try{
+    btn.disabled = true;
+    await apiRequest(`/api/users/${uid}/follow`, 'POST');
+    btn.textContent = 'Following';
+  } catch (e) {
+    btn.disabled = false;
+    alert('Could not follow user.');
+  }
 }
 
-async function loadRecommendations() {
-    try {
-        const recommendations = await apiRequest('/api/users/recommendations');
-        const list = document.getElementById('recommended-list');
-        if (!recommendations || recommendations.length === 0) {
-            list.innerHTML = '<p>No one to recommend right now.</p>';
-            return;
-        }
-        list.innerHTML = recommendations.map(user => `
-            <li>
-                <div>
-                    <a href="profile.html?id=${user._id}">
-                        ${user.name} <span class="user-role">(${user.role})</span>
-                    </a>
-                </div>
-                <div>
-                    <button class="btn btn-sm" onclick="followUser('${user._id}', this)">Follow</button>
-                </div>
-            </li>
-        `).join('');
-    } catch (error) {
-        document.getElementById('recommended-list').innerHTML = '<p style="color:red;">Could not load recommendations.</p>';
-    }
-}
+/* Helpers: modal open/close + small utils */
+function openModal(id){ const el = document.getElementById(id); if (el) el.style.display = 'flex'; }
+function closeModal(id){ const el = document.getElementById(id); if (el) el.style.display = 'none'; }
+function findTeam(){ window.location.href = 'find-team.html'; }
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
 
-async function loadTeamJoinRequests() {
-    try {
-        const me = await apiRequest('/api/users/me');
-        const requests = me.joinRequests.filter(req => req.status === 'pending');
-        const requestsList = document.getElementById('join-requests-list');
-        
-        if (requests.length > 0) {
-            document.getElementById('team-requests-card').style.display = 'block';
-            requestsList.innerHTML = requests.map(req => `
-                <li>
-                    <span>${req.player.name}</span>
-                    <div>
-                        <button class="btn btn-sm" onclick="manageJoinRequest('${req._id}', 'approved')">Approve</button>
-                        <button class="btn btn-sm" onclick="manageJoinRequest('${req._id}', 'rejected')">Reject</button>
-                    </div>
-                </li>
-            `).join('');
-        } else {
-            document.getElementById('team-requests-card').style.display = 'none';
-        }
-    } catch (error) {
-        console.error('Failed to load join requests:', error);
-    }
-}
-
-async function manageJoinRequest(requestId, status) {
-    try {
-        await apiRequest(`/api/users/manage-join-request/${requestId}`, 'PUT', { status });
-        alert(`Request ${status} successfully.`);
-        loadTeamJoinRequests();
-    } catch (error) {
-        alert('Failed to manage request: ' + error.message);
-    }
-}
-
-async function findTeam() {
-    window.location.href = 'find-team.html'; 
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadProfile();
-    loadFeed();
-    loadTournaments();
-    loadRecommendations();
+/* init */
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadProfile();
+  loadFeed();
+  loadTournaments();
+  loadRecommendations();
 });
 </script>
 </body>

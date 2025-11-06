@@ -1,4 +1,5 @@
-import express from "express";
+// backend/server.js (Only showing the necessary imports and route registration)
+
 import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
@@ -9,18 +10,27 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
+// backend/server.js
+
+import express from "express";
+// ... (other imports)
 import tournamentRoutes from "./routes/tournamentRoutes.js";
 
+// FIX: Add the .js extension to the import path
+import chatRoutes from "./routes/chatbot.js"; 
+
+
 dotenv.config();
+// ... (rest of the file remains the same)
 connectDB();
 
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"]
-  }
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"]
+  }
 });
 
 app.use(cors());
@@ -36,20 +46,22 @@ app.set('io', io);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
-// Pass io to the tournamentRoutes
 app.use("/api/tournaments", tournamentRoutes);
 
-io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
-  
-  socket.on("join_match_room", (matchId) => {
-    socket.join(matchId);
-    console.log(`User ${socket.id} joined room for match ${matchId}`);
-  });
+// ⬅️ REGISTER THE NEW CHATBOT API ROUTE ➡️
+app.use("/api/chat", chatRoutes); 
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+  
+  socket.on("join_match_room", (matchId) => {
+    socket.join(matchId);
+    console.log(`User ${socket.id} joined room for match ${matchId}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
 });
 
 const PORT = process.env.PORT || 5000;

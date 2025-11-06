@@ -30,10 +30,34 @@ body {
   position: relative;
 }
 
+/* --- NEW: Back Button Styling --- */
+.back-link {
+    position: absolute;
+    top: 30px; /* Aligned with the top padding of the header */
+    left: 40px; /* Aligned with the left padding of the container */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--primary-blue);
+    font-size: 1.2em;
+    text-decoration: none;
+    z-index: 10;
+    transition: background 0.3s, color 0.3s;
+}
+.back-link:hover {
+    background: var(--primary-blue);
+    color: #fff;
+}
+
+
 /* Header structure for the top-level 3-column alignment */
 .profile-header-meta {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr; /* Left (Small), Center (Wide), Right (Small) */
+    grid-template-columns: 1fr 2fr 1fr; 
     padding-top: 30px; 
     align-items: flex-start;
     min-height: 150px; 
@@ -45,7 +69,8 @@ body {
     flex-direction: row; 
     gap: 15px; 
     text-align: center;
-    padding-top: 20px;
+    padding-top: 70px; /* Pushed down to clear space for back button */
+    padding-left: 60px; /* Adjusted to accommodate back button */
 }
 .stat-item {
     font-size: 0.9em; 
@@ -65,7 +90,7 @@ body {
     text-transform: uppercase;
 }
 
-/* --- CENTER: Name/Sport/Bio --- */
+/* --- CENTER: Name/Sport/Bio (Remains the same) --- */
 .meta-center {
     display: flex;
     flex-direction: column;
@@ -81,26 +106,26 @@ body {
 .profile-info p.sport { margin:0 0 20px; color:var(--primary-blue); font-weight: bold; font-size: 1.1em;}
 
 
-/* --- RIGHT: Small Avatar & Action --- */
+/* --- RIGHT: Small Avatar & Action (Remains the same) --- */
 .meta-right {
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* Right align avatar and action */
+    align-items: flex-end; 
     text-align: right;
 }
 .profile-avatar-container {
     margin-bottom: 5px; 
 }
 .profile-avatar { 
-    width:60px; height:60px; /* VERY SMALL SIZE */
+    width:60px; height:60px; 
     border-radius:50%; 
-    border:3px solid var(--vibrant-orange); /* Thin border */
+    border:3px solid var(--vibrant-orange); 
     background-color:#fff; 
     object-fit:cover; 
 }
 .edit-profile-action {
     color: var(--primary-blue);
-    font-size: 0.8em; /* Smaller action text */
+    font-size: 0.8em; 
     font-weight: bold;
     cursor: pointer;
     text-decoration: none;
@@ -109,7 +134,7 @@ body {
 .edit-profile-action:hover { color: var(--highlight-yellow); }
 
 
-/* --- CENTERED TABS and Content Area --- */
+/* --- CENTERED TABS and Content Area (Remains the same) --- */
 .content-area {
     width: 100%;
     margin-top: 30px; 
@@ -117,14 +142,13 @@ body {
     flex-direction: column;
     align-items: center;
 }
-/* ADD STATS button styling */
 .add-stats-btn {
     padding:15px 40px; 
-    background:var(--vibrant-orange); /* Changed to orange for high prominence */
+    background:var(--vibrant-orange); 
     border:none; border-radius:10px; color:#fff;
     cursor:pointer; font-weight:bold; transition:0.3s;
     text-decoration: none;
-    margin-bottom: 25px; /* Space below button, above tabs */
+    margin-bottom: 25px; 
     box-shadow: 0 4px 15px rgba(255, 123, 0, 0.5);
 }
 .add-stats-btn:hover { background: #ff9a3c; }
@@ -145,7 +169,7 @@ body {
   font-weight: 700;
   text-transform: uppercase;
 }
-.tab-btn.active { color:var(--primary-blue); border-bottom:4px solid var(--primary-blue); } /* Blue for active tab */
+.tab-btn.active { color:var(--primary-blue); border-bottom:4px solid var(--primary-blue); } 
 
 .tab-content { padding:20px 25px; width: 100%; max-width: 1000px;}
 .tab-pane { display:none; }
@@ -163,7 +187,7 @@ body {
     border:1px solid rgba(255,255,255,0.1);
 }
 
-/* Media Query for smaller screens (remains the same) */
+/* Media Query for smaller screens (adjusted padding for back button) */
 @media(max-width:900px) {
     .profile-header-meta {
         grid-template-columns: 1fr; 
@@ -171,10 +195,13 @@ body {
         padding-right: 20px;
         text-align: center;
     }
+    .back-link { left: 20px; }
     .meta-left {
         justify-content: center;
         order: 2;
         margin-top: 20px;
+        padding-left: 0; /* Remove extra padding on mobile */
+        padding-top: 0;
     }
     .meta-center { order: 1; margin-bottom: 10px; }
     .meta-right { 
@@ -183,13 +210,13 @@ body {
         order: 3;
     }
     .content-area { margin-top: 30px; }
-    .tabs-container { width: 100%; gap: 10px; }
 }
 </style>
 </head>
 <body>
 <div class="container">
-  
+    <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i></a>
+
     <div id="profile-container">
       <p style="padding:40px;text-align:center;color:rgba(255,255,255,0.7);">Loading profile...</p>
     </div>
@@ -229,14 +256,12 @@ function renderProfile(user) {
     overallStatsHTML = `<p style="text-align:center;color:rgba(255,255,255,0.7);">No overall stats yet.</p>`;
   }
 
-  // Right column action (Edit Profile link under small avatar)
   const rightActions = isOwn 
       ? `<a href="edit-profile.html" class="edit-profile-action"><i class="fas fa-edit"></i> Edit Profile</a>`
       : `<button class="edit-profile-action" onclick="followUser('${user._id}')" style="color:var(--vibrant-orange); border:none; background:none; cursor:pointer;">
            <i class="fas fa-user-plus"></i> Follow User
          </button>`;
 
-  // **MOVED ACTION**: Add Stats button placed BEFORE tabs
   const addStatsButton = isOwn
       ? `<a href="match-stat.html" class="add-stats-btn"><i class="fas fa-plus-circle"></i> ADD STATS</a>`
       : '';
@@ -284,8 +309,6 @@ function renderProfile(user) {
 
   loadMatchStats(user._id);
 }
-
-// (The rest of the JavaScript functions remain the same)
 
 function renderPosts(posts) {
   if (!posts?.length) return `<p style="text-align:center;color:rgba(255,255,255,0.7);">No posts yet.</p>`;

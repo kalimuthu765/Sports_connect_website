@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sports AI Chatbot</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+:root{
+  --primary-blue:#00e0ff;
+  --secondary-color:#5efc82;
+  --text-light:#e8f7ff;
+  --text-secondary:#a0c4ff;
+  --bg-dark:#0f2027;
+  --bg-mid:#203a43;
+}
+
+/* reset + base */
+*{box-sizing:border-box}
+body{
+  font-family:'Poppins',sans-serif;
+  margin:0;padding:0;
+  color:var(--text-light);
+  background:linear-gradient(135deg,var(--bg-dark),var(--bg-mid));
+  background-size:200% 200%;
+  min-height:100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Chatbot Card Styling */
+.chatbot-container {
+    width: 90%;
+    max-width: 700px;
+    background: linear-gradient(180deg, rgba(8,18,22,0.7), rgba(6,12,14,0.6));
+    border: 1px solid rgba(0,224,255,0.24);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px) saturate(140%);
+    position: relative;
+}
+.chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--primary-blue);
+    padding-bottom: 10px;
+}
+.chatbot-header h2 {
+    color: var(--secondary-color);
+    margin: 0;
+    font-size: 1.6rem;
+}
+#chat-window {
+    display: flex;
+    flex-direction: column;
+    height: 500px; 
+}
+#chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+#chat-messages::-webkit-scrollbar{ width: 6px; }
+#chat-messages::-webkit-scrollbar-thumb{ background: rgba(0,224,255,0.2); border-radius: 6px; }
+
+.chat-message {
+    padding: 8px 0;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+.user-msg {
+    text-align: right;
+    color: var(--secondary-color);
+}
+.bot-msg {
+    text-align: left;
+    color: var(--text-light);
+}
+.bot-msg strong {
+    color: var(--primary-blue);
+    margin-right: 5px;
+}
+/* Loader animation for processing time */
+.loader-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary-blue);
+    margin: 0 2px;
+    animation: bounce 1.2s infinite ease-in-out both;
+}
+.loader-dot:nth-child(1) { animation-delay: -0.32s; }
+.loader-dot:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+#chat-input-area {
+    display: flex;
+    gap: 10px;
+}
+#chat-input {
+    flex-grow: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 224, 255, 0.4);
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--text-light);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+#chat-input:focus {
+    border-color: var(--secondary-color);
+}
+.btn-send { 
+    padding: 12px 18px; 
+    border-radius: 8px; 
+    border: none; 
+    font-weight: 700; 
+    cursor: pointer; 
+    background: linear-gradient(90deg,var(--primary-blue),var(--secondary-color)); 
+    color: #000; 
+    box-shadow: 0 4px 10px rgba(0,224,255,0.2); 
+    transition: all .18s ease; 
+}
+.btn-send:hover:not(:disabled) { 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 15px rgba(0,224,255,0.3); 
+}
+.btn-send:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.back-link {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(0,224,255,0.1);
+    border: 1px solid rgba(0,224,255,0.3);
+}
+.back-link:hover {
+    background: rgba(0,224,255,0.2);
+    color: var(--secondary-color);
+}
+</style>
+</head>
+<body>
+
+<div class="chatbot-container">
+    <div class="chatbot-header">
+        <h2><i class="fas fa-robot"></i> Sports AI Assistant</h2>
+        <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <div id="chat-window">
+        <div id="chat-messages">
+            <div class="chat-message bot-msg">
+                <strong>AI:</strong> Welcome! I'm your **Sports Analyst powered by Gemini**. I am strictly limited to answering questions about **Sports, Athletes, Teams, and Games**.
+            </div>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask a sports question (e.g., 'Who won the last F1 race?')..." onkeydown="handleChatInput(event)">
+            <button class="btn-send" id="send-btn" onclick="sendChatbotMessage()">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// FRONTEND CHAT LOGIC - CONNECTING TO THE SECURE BACKEND
+const API_ENDPOINT = 'http://localhost:5000/api/chat/message'; // <-- NEW TARGET
+
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const sendBtn = document.getElementById('send-btn');
+
+
+function handleChatInput(event) {
+    if (event.key === 'Enter') {
+        sendChatbotMessage();
+    }
+}
+
+async function sendChatbotMessage() {
+    const userMessage = chatInput.value.trim();
+    if (userMessage === '') return;
+
+    // UI: Add user message and loader
+    const userMsgEl = document.createElement('div');
+    userMsgEl.className = 'chat-message user-msg';
+    userMsgEl.textContent = userMessage;
+    chatMessages.appendChild(userMsgEl);
+
+    const loaderMsgEl = document.createElement('div');
+    loaderMsgEl.className = 'chat-message bot-msg';
+    loaderMsgEl.innerHTML = '<strong>AI:</strong> <span id="loader-dots"><span class="loader-dot"></span><span class="loader-dot"></span><span class="loader-dot"></span></span>';
+    chatMessages.appendChild(loaderMsgEl);
+
+    chatInput.value = '';
+    sendBtn.disabled = true;
+    chatInput.disabled = true;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+        // 3. CALL YOUR SECURE NODE.JS BACKEND
+        const response = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMessage })
+        });
+
+        const data = await response.json();
+        
+        // Handle backend errors 
+        if (!response.ok || data.error) {
+             throw new Error(data.error || 'Failed to communicate with secure backend.');
+        }
+
+        // Remove the loader
+        loaderMsgEl.remove();
+
+        // Add the actual AI response
+        const botMsgEl = document.createElement('div');
+        botMsgEl.className = 'chat-message bot-msg';
+        botMsgEl.innerHTML = `<strong>AI:</strong> ${data.text}`;
+        chatMessages.appendChild(botMsgEl);
+
+    } catch (error) {
+        console.error("Backend Communication Error:", error);
+        loaderMsgEl.remove();
+        const errorMsgEl = document.createElement('div');
+        errorMsgEl.className = 'chat-message bot-msg';
+        errorMsgEl.innerHTML = '<strong>AI:</strong> <span style="color:tomato;">Error: Failed to connect to the secure AI service. Please ensure your backend is running on port 5000.</span>';
+        chatMessages.appendChild(errorMsgEl);
+    } finally {
+        sendBtn.disabled = false;
+        chatInput.disabled = false;
+        chatInput.focus();
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+}
+</script>
+</body>
+</html>

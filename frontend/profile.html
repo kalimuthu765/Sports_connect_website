@@ -3,117 +3,223 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profile - SportsConnect</title>
+<title>Profile - Compact Full Screen SportsConnect</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
+/* --- 🌟 Final Compact & Attractive Layout CSS --- */
 :root {
   --primary-blue: #00b4d8;
-  --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  --card-glass: rgba(255, 255, 255, 0.08);
-  --border-light: rgba(255, 255, 255, 0.2);
+  --vibrant-orange: #ff7b00; 
+  --bg-gradient: linear-gradient(135deg, #101216, #1a1d22, #21252b); 
   --text-light: #f8f9fa;
+  --highlight-yellow: #ffc300; 
 }
 body {
-  margin: 0; padding: 0;
+  margin: 0; 
+  padding: 0;
   font-family: 'Inter', sans-serif;
   background: var(--bg-gradient);
   color: var(--text-light);
-  display: flex; justify-content: center; align-items: flex-start;
   min-height: 100vh;
 }
 .container {
-  width: 100%; max-width: 900px;
-  margin: 50px auto; padding: 20px;
+  width: 100%; 
+  max-width: 1300px;
+  margin: 0 auto; 
+  padding: 0 40px;
   position: relative;
 }
-.card {
-  background: var(--card-glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border-light);
-  border-radius: 25px;
-  overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-  padding-bottom: 20px;
-}
-.profile-header-banner { height:180px; background:linear-gradient(135deg,#0077b6,#00b4d8); }
-.profile-content { display:flex; flex-direction:column; align-items:center; margin-top:-80px; padding:0 20px; }
-.profile-avatar { width:150px; height:150px; border-radius:50%; border:5px solid var(--primary-blue); background-color:#fff; object-fit:cover; }
-.profile-info { text-align:center; margin-top:15px; }
-.profile-info h1 { margin:10px 0 5px; font-size:2em; }
-.profile-info p { margin:3px 0; color:rgba(255,255,255,0.8); }
 
-.stats-inline {
-  display: flex; justify-content: center; gap: 40px; margin-top: 15px;
+/* --- NEW: Back Button Styling --- */
+.back-link {
+    position: absolute;
+    top: 30px; /* Aligned with the top padding of the header */
+    left: 40px; /* Aligned with the left padding of the container */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--primary-blue);
+    font-size: 1.2em;
+    text-decoration: none;
+    z-index: 10;
+    transition: background 0.3s, color 0.3s;
 }
-.stats-inline .stat { text-align: center; }
-.stats-inline .stat strong { font-size: 1.2em; display: block; color: #fff; }
-.stats-inline .stat span { color: rgba(255,255,255,0.8); font-size: 0.9em; }
-
-.btn-group { display:flex; gap:15px; justify-content:center; margin-top:15px; }
-.btn {
-  padding:10px 20px; background:var(--primary-blue);
-  border:none; border-radius:8px; color:#fff;
-  cursor:pointer; font-weight:bold; transition:0.3s;
+.back-link:hover {
+    background: var(--primary-blue);
+    color: #fff;
 }
-.btn:hover { background:#0096c7; }
 
-.tabs { display:flex; justify-content:center; gap:20px; margin-top:25px; }
+
+/* Header structure for the top-level 3-column alignment */
+.profile-header-meta {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr; 
+    padding-top: 30px; 
+    align-items: flex-start;
+    min-height: 150px; 
+}
+
+/* --- LEFT: Horizontal Posts/Follows/Following (COMPACT) --- */
+.meta-left {
+    display: flex; 
+    flex-direction: row; 
+    gap: 15px; 
+    text-align: center;
+    padding-top: 70px; /* Pushed down to clear space for back button */
+    padding-left: 60px; /* Adjusted to accommodate back button */
+}
+.stat-item {
+    font-size: 0.9em; 
+    font-weight: bold;
+    line-height: 1.2;
+    padding: 0 5px;
+}
+.stat-item strong { 
+    display: block;
+    font-size: 1.2em; 
+    color: var(--highlight-yellow); 
+}
+.stat-item span { 
+    color: rgba(255,255,255,0.7); 
+    font-size: 0.7em; 
+    font-weight: normal; 
+    text-transform: uppercase;
+}
+
+/* --- CENTER: Name/Sport/Bio (Remains the same) --- */
+.meta-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.profile-info { margin-top: 0; }
+.profile-info h1 { 
+    margin:0 0 5px; 
+    font-size:2.5em; 
+}
+.profile-info p.bio { margin:0 0 5px; color:rgba(255,255,255,0.8); font-style: italic;}
+.profile-info p.sport { margin:0 0 20px; color:var(--primary-blue); font-weight: bold; font-size: 1.1em;}
+
+
+/* --- RIGHT: Small Avatar & Action (Remains the same) --- */
+.meta-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; 
+    text-align: right;
+}
+.profile-avatar-container {
+    margin-bottom: 5px; 
+}
+.profile-avatar { 
+    width:60px; height:60px; 
+    border-radius:50%; 
+    border:3px solid var(--vibrant-orange); 
+    background-color:#fff; 
+    object-fit:cover; 
+}
+.edit-profile-action {
+    color: var(--primary-blue);
+    font-size: 0.8em; 
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.edit-profile-action:hover { color: var(--highlight-yellow); }
+
+
+/* --- CENTERED TABS and Content Area (Remains the same) --- */
+.content-area {
+    width: 100%;
+    margin-top: 30px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.add-stats-btn {
+    padding:15px 40px; 
+    background:var(--vibrant-orange); 
+    border:none; border-radius:10px; color:#fff;
+    cursor:pointer; font-weight:bold; transition:0.3s;
+    text-decoration: none;
+    margin-bottom: 25px; 
+    box-shadow: 0 4px 15px rgba(255, 123, 0, 0.5);
+}
+.add-stats-btn:hover { background: #ff9a3c; }
+
+
+.tabs-container {
+    display:flex; justify-content:center; gap:80px; 
+    padding: 15px 0;
+    margin-bottom: 20px;
+    border-bottom: 3px solid rgba(255,255,255,0.1); 
+    width: 80%; 
+}
 .tab-btn {
-  background:none; border:none; color:rgba(255,255,255,0.6);
-  font-size:1em; cursor:pointer; padding:10px 20px;
-  border-bottom:2px solid transparent; transition:0.3s;
+  background:none; border:none; color:rgba(255,255,255,0.7);
+  font-size:1.2em; 
+  cursor:pointer; padding:10px 15px;
+  border-bottom:4px solid transparent; transition:0.3s;
+  font-weight: 700;
+  text-transform: uppercase;
 }
-.tab-btn.active { color:var(--primary-blue); border-bottom:2px solid var(--primary-blue); }
+.tab-btn.active { color:var(--primary-blue); border-bottom:4px solid var(--primary-blue); } 
 
-.tab-content { padding:20px 25px; }
+.tab-content { padding:20px 25px; width: 100%; max-width: 1000px;}
 .tab-pane { display:none; }
 .tab-pane.active { display:block; }
 
-.posts-scroll-box {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:15px; max-height:350px; overflow-y:auto;
-}
-.post-card {
-  background:rgba(255,255,255,0.1);
-  border-radius:12px; padding:15px;
-  border:1px solid rgba(255,255,255,0.1);
+.posts-scroll-box, .stats-row {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px; 
+    padding: 10px;
 }
 .stat-card {
-  background:rgba(255,255,255,0.1);
-  border-radius:12px;
-  padding:15px;
-  border:1px solid rgba(255,255,255,0.1);
-  margin-bottom:12px;
-}
-.stat-card h3 {
-  color: var(--primary-blue);
-  margin-bottom: 8px;
+    background:rgba(255,255,255,0.05); 
+    border-radius:10px;
+    padding:20px;
+    border:1px solid rgba(255,255,255,0.1);
 }
 
-/* back arrow */
-.back-link {
-  position:absolute; top:20px; left:20px;
-  width:45px; height:45px; border-radius:50%;
-  background:rgba(0,0,0,0.5); color:#fff;
-  display:flex; justify-content:center; align-items:center;
-  text-decoration:none; font-size:18px;
-  z-index: 10;
-}
-.back-link:hover { background:rgba(0,0,0,0.7); }
-
-@media(max-width:600px) {
-  .profile-avatar { width:120px; height:120px; }
-  .profile-info h1 { font-size:1.5em; }
-  .stats-inline { gap:25px; }
+/* Media Query for smaller screens (adjusted padding for back button) */
+@media(max-width:900px) {
+    .profile-header-meta {
+        grid-template-columns: 1fr; 
+        padding-left: 20px;
+        padding-right: 20px;
+        text-align: center;
+    }
+    .back-link { left: 20px; }
+    .meta-left {
+        justify-content: center;
+        order: 2;
+        margin-top: 20px;
+        padding-left: 0; /* Remove extra padding on mobile */
+        padding-top: 0;
+    }
+    .meta-center { order: 1; margin-bottom: 10px; }
+    .meta-right { 
+        align-items: center;
+        text-align: center;
+        order: 3;
+    }
+    .content-area { margin-top: 30px; }
 }
 </style>
 </head>
 <body>
 <div class="container">
-  <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i></a>
-  <div class="card" id="profile-container">
-    <p style="padding:40px;text-align:center;color:rgba(255,255,255,0.7);">Loading profile...</p>
-  </div>
+    <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i></a>
+
+    <div id="profile-container">
+      <p style="padding:40px;text-align:center;color:rgba(255,255,255,0.7);">Loading profile...</p>
+    </div>
 </div>
 
 <script>
@@ -138,71 +244,85 @@ async function apiRequest(endpoint, method='GET', body=null) {
 function renderProfile(user) {
   const container = document.getElementById('profile-container');
   const isOwn = user._id === currentUserId;
-  const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=160&background=00b4d8&color=fff&bold=true`;
+  const playerRole = user.role?.toUpperCase() || 'USER';
+  const roleColor = playerRole === 'PLAYER' ? 'var(--vibrant-orange)' : 'var(--primary-blue)'; 
+  const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=60&background=ff7b00&color=fff&bold=true`;
 
   let overallStatsHTML = "";
-if (user.overallStats && typeof user.overallStats === "object") {
-  overallStatsHTML = Object.entries(user.overallStats)
-    .map(([key,val]) => `<div class="stat"><strong>${val}</strong><span>${key}</span></div>`).join('');
-} else {
-  overallStatsHTML = `<p style="text-align:center;color:rgba(255,255,255,0.7);">No overall stats yet.</p>`;
-}
+  if (user.overallStats && typeof user.overallStats === "object") {
+    overallStatsHTML = '<div class="stats-row">' + Object.entries(user.overallStats)
+      .map(([key, val]) => `<div class="stat-card"><h3>${key.toUpperCase()}</h3><p style="font-size:1.8em; color: var(--highlight-yellow);">${val}</p></div>`).join('') + '</div>';
+  } else {
+    overallStatsHTML = `<p style="text-align:center;color:rgba(255,255,255,0.7);">No overall stats yet.</p>`;
+  }
 
+  const rightActions = isOwn 
+      ? `<a href="edit-profile.html" class="edit-profile-action"><i class="fas fa-edit"></i> Edit Profile</a>`
+      : `<button class="edit-profile-action" onclick="followUser('${user._id}')" style="color:var(--vibrant-orange); border:none; background:none; cursor:pointer;">
+           <i class="fas fa-user-plus"></i> Follow User
+         </button>`;
 
-  const actions = isOwn
-    ? `<div class="btn-group">
-         <a href="edit-profile.html" class="btn">Edit Profile</a>
-         <a href="match-stat.html" class="btn">Add Stats</a>
-       </div>`
-    : `<div class="btn-group"><button class="btn" onclick="followUser('${user._id}')">Follow</button></div>`;
+  const addStatsButton = isOwn
+      ? `<a href="match-stat.html" class="add-stats-btn"><i class="fas fa-plus-circle"></i> ADD STATS</a>`
+      : '';
 
   container.innerHTML = `
-    <div class="profile-header-banner"></div>
-    <div class="profile-content">
-      <img src="${avatar}" class="profile-avatar" alt="Avatar">
-      <div class="profile-info">
-        <h1>${user.name} (${user.role?.toUpperCase() || ''})</h1>
-        <p>${user.bio || 'No bio yet.'}</p>
-        ${user.sport ? `<p>Sport: ${user.sport}</p>` : ''}
-      </div>
-      <div class="stats-inline">
-        <div class="stat"><strong>${user.posts?.length||0}</strong><span>Posts</span></div>
-        <div class="stat"><strong>${user.followers?.length||0}</strong><span>Followers</span></div>
-        <div class="stat"><strong>${user.following?.length||0}</strong><span>Following</span></div>
-      </div>
-      ${actions}
-      <div class="tabs">
-        <button class="tab-btn active" onclick="showTab(event,'posts')">Posts</button>
-        <button class="tab-btn" onclick="showTab(event,'matchstats')">Stats</button>
-        <button class="tab-btn" onclick="showTab(event,'overallstats')">Overall Stats</button>
-      </div>
+    <div class="profile-header-meta">
+        <div class="meta-left">
+            <div class="stat-item"><strong>${user.posts?.length || 0}</strong><span>POSTS</span></div>
+            <div class="stat-item"><strong>${user.followers?.length || 0}</strong><span>FOLLOWERS</span></div>
+            <div class="stat-item"><strong>${user.following?.length || 0}</strong><span>FOLLOWING</span></div>
+        </div>
+        
+        <div class="meta-center">
+            <div class="profile-info">
+                <h1>${user.name} <span style="color: ${roleColor}; font-size: 0.7em; font-weight: bold;">(${playerRole})</span></h1>
+                <p class="bio">${user.bio || 'Enter a bio here.'}</p>
+                ${user.sport ? `<p class="sport">SPORT: ${user.sport.toUpperCase()}</p>` : ''}
+            </div>
+        </div>
+        
+        <div class="meta-right">
+            <div class="profile-avatar-container">
+                <img src="${avatar}" class="profile-avatar" alt="Avatar">
+            </div>
+            ${rightActions}
+        </div>
+    </div>
 
-      <div class="tab-content">
-        <div id="posts-content" class="tab-pane active">${renderPosts(user.posts)}</div>
-        <div id="matchstats-content" class="tab-pane"><p style="text-align:center;color:rgba(255,255,255,0.7);">Loading stats...</p></div>
-        <div id="overallstats-content" class="tab-pane"><div class="stats-row">${overallStatsHTML}</div></div>
-      </div>
+    <div class="content-area">
+         
+        ${addStatsButton}
+
+         <div class="tabs-container">
+            <button class="tab-btn active" onclick="showTab(event,'posts')">POSTS</button>
+            <button class="tab-btn" onclick="showTab(event,'matchstats')">STATS</button>
+            <button class="tab-btn" onclick="showTab(event,'overallstats')">OVERALL STATS</button>
+        </div>
+
+        <div class="tab-content">
+            <div id="posts-content" class="tab-pane active">${renderPosts(user.posts)}</div>
+            <div id="matchstats-content" class="tab-pane"><p style="text-align:center;color:rgba(255,255,255,0.7);">Loading stats...</p></div>
+            <div id="overallstats-content" class="tab-pane">${overallStatsHTML}</div>
+        </div>
     </div>`;
-  
-  // Load match stats separately
+
   loadMatchStats(user._id);
 }
 
 function renderPosts(posts) {
   if (!posts?.length) return `<p style="text-align:center;color:rgba(255,255,255,0.7);">No posts yet.</p>`;
   return `<div class="posts-scroll-box">
-    ${posts.map(p=>`<div class="post-card"><p>${p.caption}</p></div>`).join('')}
+    ${posts.map(p => `<div class="stat-card"><p>${p.caption}</p></div>`).join('')}
   </div>`;
 }
 
-// ✅ New Function — Load Match Stats from backend
 async function loadMatchStats(userId) {
   try {
-    // Get the user data
     const endpoint = userId === currentUserId ? '/api/users/me' : `/api/users/${userId}`;
     const user = await apiRequest(endpoint);
 
-    const data = user.matchStats || []; // get all match stats
+    const data = user.matchStats || [];
     const statsContainer = document.getElementById('matchstats-content');
 
     if (!data.length) {
@@ -210,15 +330,13 @@ async function loadMatchStats(userId) {
       return;
     }
 
-    // Display each match stat in a card
-    statsContainer.innerHTML = data.map(s => `
-      <div class="stat-card">
-        <h3>${s.sport || 'Game'}</h3>
-        <p><b>Date:</b> ${s.matchDate || 'N/A'}</p>
+    statsContainer.innerHTML = data.map(s =>
+      `<div class="stat-card">
+        <h3>${s.sport || 'Game'} - Match Date: ${s.matchDate || 'N/A'}</h3>
         <p><b>Opponent:</b> ${s.opponent || 'N/A'}</p>
-        <div>${Object.entries(s.stats || {}).map(([k,v]) => `<div>${k}: ${v}</div>`).join('')}</div>
-      </div>
-    `).join('');
+        <div>${Object.entries(s.stats || {}).map(([k, v]) => `<div>${k}: ${v}</div>`).join('')}</div>
+      </div>`
+    ).join('');
   } catch (err) {
     document.getElementById('matchstats-content').innerHTML =
       `<p style="text-align:center;color:#ff6b6b;">Could not load stats: ${err.message}</p>`;

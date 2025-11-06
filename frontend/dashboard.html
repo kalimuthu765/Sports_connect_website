@@ -97,7 +97,7 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
 .reco-left img{ width:36px; height:36px; border-radius:50%; border:2px solid var(--primary-blue); }
 .reco-name{ color:var(--primary-blue); font-weight:700; text-decoration:none; }
 
-/* ====== LIVE TOURNAMENTS (RESTORED / STYLED) ====== */
+/* LIVE TOURNAMENTS */
 #tournaments-list{
   display:flex; flex-direction:column; gap:12px; padding:8px 0;
 }
@@ -117,8 +117,6 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
   box-shadow: 0 12px 28px rgba(0,0,0,0.55), 0 0 18px rgba(0,224,255,0.08);
   background: linear-gradient(180deg, rgba(0,224,255,0.02), rgba(94,252,130,0.02));
 }
-
-/* small tournament pill (optional visual) */
 .tourn-pill{ padding:6px 10px; border-radius:999px; font-weight:700; background:rgba(0,0,0,0.25); color:var(--text-secondary); border:1px solid rgba(255,255,255,0.03); }
 
 /* MODALS: post & follow */
@@ -133,6 +131,32 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
 .modal-list{ max-height:56vh; overflow-y:auto; padding-right:6px; margin-top:8px; }
 .fuser{ display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.03); }
 .fuser img{ width:44px; height:44px; border-radius:50%; border:2px solid var(--primary-blue); }
+
+/* ====== NEW CHATBOT LINK STYLING ====== */
+#chatbot-link-card {
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .22s ease;
+    text-decoration: none; /* Make it look like a seamless card */
+    display: block;
+}
+#chatbot-link-card:hover {
+    transform: scale(1.02);
+    border-color: var(--secondary-color);
+}
+.chatbot-icon {
+    font-size: 2.5rem;
+    color: var(--secondary-color);
+    text-shadow: 0 0 10px rgba(94,252,130,0.5);
+    margin-bottom: 8px;
+}
+.chatbot-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
 
 /* responsive */
 @media (max-width: 992px){
@@ -153,7 +177,6 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
   </div>
 </nav>
 
-<!-- POST MODAL -->
 <div id="postModal" class="modal-overlay" aria-hidden="true">
   <div class="modal-box" role="dialog" aria-modal="true">
     <span class="modal-close" onclick="closePostModal()">&times;</span>
@@ -163,7 +186,6 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
   </div>
 </div>
 
-<!-- FOLLOWERS / FOLLOWING MODAL -->
 <div id="followModal" class="modal-overlay" aria-hidden="true">
   <div class="modal-box" role="dialog" aria-modal="true">
     <span class="modal-close" onclick="closeFollowModal()">&times;</span>
@@ -171,9 +193,7 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
     <div id="followList" class="modal-list"><p style="color:var(--text-secondary);">Loading...</p></div>
   </div>
 </div>
-
 <div class="container">
-  <!-- LEFT: profile + my team -->
   <aside>
     <div id="dashboard-profile-header" class="card">
       <p style="color:var(--text-secondary);">Loading profile...</p>
@@ -183,9 +203,13 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
       <h3><i class="fas fa-shield-alt"></i> My Team</h3>
       <div id="player-team-status"><p style="color:var(--text-secondary);">Loading...</p></div>
     </div>
-  </aside>
 
-  <!-- MAIN: social feed -->
+    <a href="chatbot.html" id="chatbot-link-card" class="card">
+        <div class="chatbot-icon"><i class="fas fa-robot"></i></div>
+        <div class="chatbot-text">Ask the Sports AI</div>
+    </a>
+    </aside>
+
   <main>
     <div class="card feed-card">
       <h2><i class="fas fa-bullhorn"></i> Social Feed</h2>
@@ -194,7 +218,6 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
     </div>
   </main>
 
-  <!-- RIGHT: tournaments + recommended -->
   <aside>
     <div class="card">
   <h3><i class="fas fa-medal"></i> Live Tournaments</h3>
@@ -237,7 +260,6 @@ async function apiRequest(endpoint, method = 'GET', body = null){
   if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
   const res = await fetch(`http://localhost:5000${endpoint}`, opts);
   if (!res.ok) {
-    // try to return helpful message
     try { const j = await res.json(); throw new Error(j.message || 'API request failed'); } catch (e) { throw new Error('API request failed'); }
   }
   return res.status === 204 ? null : res.json();
@@ -360,7 +382,7 @@ async function createPostFromModal(){
   } catch (e) { alert('Failed to create post.'); console.error(e); }
 }
 
-/* Tournaments (restored visually + load) */
+/* Tournaments */
 async function loadTournaments(){
   try{
     const tournaments = await apiRequest('/api/tournaments');
@@ -419,6 +441,7 @@ function closeModal(id){ const el = document.getElementById(id); if (el) el.styl
 function findTeam(){ window.location.href = 'find-team.html'; }
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
+
 
 /* init */
 document.addEventListener('DOMContentLoaded', ()=>{

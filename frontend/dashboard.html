@@ -129,10 +129,48 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
 .modal-box h3{ color:var(--secondary-color); margin:0 0 12px 0; }
 .modal-close{ float:right; cursor:pointer; color:var(--text-light); font-size:1.4rem; }
 .modal-list{ max-height:56vh; overflow-y:auto; padding-right:6px; margin-top:8px; }
-.fuser{ display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.03); }
-.fuser img{ width:44px; height:44px; border-radius:50%; border:2px solid var(--primary-blue); }
 
-/* ====== NEW CHATBOT LINK STYLING ====== */
+/* ✅ ENHANCED fuser STYLING */
+.fuser{ 
+    display:flex; 
+    align-items:center; 
+    justify-content: space-between; 
+    padding:10px; /* Add padding inside the item */
+    margin-bottom: 8px; /* Space between items */
+    border-radius: 8px;
+    background: rgba(255,255,255,0.03); /* Subtle background */
+    border: 1px solid rgba(0,224,255,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+}
+.fuser:hover {
+    background: rgba(0,224,255,0.05); /* Highlight on hover */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4), 0 0 5px var(--primary-blue);
+    transform: translateY(-2px);
+}
+
+.fuser-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.fuser img{ 
+    width:44px; 
+    height:44px; 
+    border-radius:50%; 
+    border:2px solid var(--primary-blue); 
+}
+.fuser-name{
+    color:var(--text-light); 
+    text-decoration:none; 
+    font-weight:700;
+}
+.fuser-name:hover {
+    color: var(--secondary-color);
+}
+
+
+/* ====== CHATBOT LINK STYLING ====== */
 #chatbot-link-card {
     padding: 15px;
     text-align: center;
@@ -203,7 +241,13 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
       <h3><i class="fas fa-shield-alt"></i> My Team</h3>
       <div id="player-team-status"><p style="color:var(--text-secondary);">Loading...</p></div>
     </div>
-
+    
+    <div id="join-requests-card" class="card" style="display: none;">
+        <h3><i class="fas fa-envelope-open-text"></i> Join Requests</h3>
+        <ul id="join-requests-list" class="item-list">
+            <p style="color:var(--text-secondary); margin:0;">Loading requests...</p>
+        </ul>
+    </div>
     <a href="chatbot.html" id="chatbot-link-card" class="card">
         <div class="chatbot-icon"><i class="fas fa-robot"></i></div>
         <div class="chatbot-text">Ask the Sports AI</div>
@@ -220,25 +264,24 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
 
   <aside>
     <div class="card">
-  <h3><i class="fas fa-medal"></i> Live Tournaments</h3>
+      <h3><i class="fas fa-medal"></i> Live Tournaments</h3>
 
-  <!-- 🔹 Added Create Tournament Button -->
-  <button class="btn btn-sm" style="width:100%; margin-bottom:10px;"
-          onclick="openCreateTournament()">
-    <i class="fas fa-plus-circle"></i> Create Tournament
-  </button>
-  <!-- 🔹 End of Addition -->
-
-  <ul id="tournaments-list" class="item-list">
-    <p style="color:var(--text-secondary); margin:0;">Loading tournaments...</p>
-  </ul>
-</div>
+      <div id="create-tournament-container" style="display: none;">
+        <button id="create-tournament-btn" class="btn btn-sm" style="width:100%; margin-bottom:10px;"
+                onclick="openCreateTournament()">
+          <i class="fas fa-plus-circle"></i> Create Tournament
+        </button>
+      </div>
+      <ul id="tournaments-list" class="item-list">
+        <p style="color:var(--text-secondary); margin:0;">Loading tournaments...</p>
+      </ul>
+    </div>
 
 
     <div class="card">
       <h3><i class="fas fa-handshake"></i> Recommended</h3>
       <ul id="recommended-list" class="item-list">
-        <p style="color:var(--text-secondary); margin:0;">Loading recommendations...</p>
+        <p style="color:var(--text-secondary); margin:0;">No recommendations right now.</p>
       </ul>
     </div>
   </aside>
@@ -255,27 +298,48 @@ function logout(){
   localStorage.clear();
   window.location.href = "index.html";
 }
+// FINAL apiRequest function (ensure this is identical to your running version)
 async function apiRequest(endpoint, method = 'GET', body = null){
   const opts = { method, headers: { 'Authorization': 'Bearer ' + token } };
   if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
   const res = await fetch(`http://localhost:5000${endpoint}`, opts);
   if (!res.ok) {
+    // This is the block that throws the error you see
     try { const j = await res.json(); throw new Error(j.message || 'API request failed'); } catch (e) { throw new Error('API request failed'); }
   }
   return res.status === 204 ? null : res.json();
 }
 
 /* Profile + My Team */
+let currentFollowingIds = [];
+
 async function loadProfile(){
   try{
-    const user = await apiRequest('/api/users/me');
+    // The /api/users/me endpoint populates 'joinRequests.player' and 'team'
+    const user = await apiRequest('/api/users/me'); 
+    
+    // Store IDs of users the current user is following for the modal logic
+    currentFollowingIds = user.following.map(f => f._id);
+    
+    // 1. Tournament Creation Visibility Check (Teams/Organizers only)
+    const createBtnContainer = document.getElementById('create-tournament-container');
+    if (createBtnContainer) {
+        // Only visible for roles 'team' or 'organizer'
+        if (user.role === 'team' || user.role === 'organizer') {
+            createBtnContainer.style.display = 'block';
+        } else {
+            createBtnContainer.style.display = 'none';
+        }
+    }
+    
+    // Existing profile header rendering
     const avatarSrc = user.avatar && user.avatar.trim() !== "" ? user.avatar : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=128&background=00e0ff&color=fff&bold=true`;
     document.getElementById('dashboard-profile-header').innerHTML = `
       <div class="profile-main-area">
         <img class="dash-avatar" src="${avatarSrc}" alt="avatar">
         <div class="dash-info">
           <h3>${escapeHtml(user.name)}</h3>
-          <p>${user.role === 'team' ? 'Team / Club' : 'player'}</p>
+          <p>${user.role === 'team' ? 'Team / Club' : user.role || 'player'}</p>
           <div class="dash-stats">
             <div class="dash-stat-item" onclick="showFollowers()"><strong>${user.followers?.length || 0}</strong><span>Followers</span></div>
             <div class="dash-stat-item" onclick="showFollowing()"><strong>${user.following?.length || 0}</strong><span>Following</span></div>
@@ -288,7 +352,8 @@ async function loadProfile(){
         </div>
       </div>
     `;
-    // My Team card
+    
+    // Existing My Team card rendering
     const teamCard = document.getElementById('team-info-card');
     if (user.role === 'team'){
       // attempt to load players (if endpoint exists)
@@ -309,46 +374,194 @@ async function loadProfile(){
         teamCard.innerHTML = `<h3><i class="fas fa-shield-alt"></i> My Team</h3><div style="margin-top:10px;"><button class="btn" onclick="findTeam()">Find a Team</button></div>`;
       }
     }
+    
+    // 2. Player Join Request Management (if Team)
+    const joinRequestsCard = document.getElementById('join-requests-card');
+    if (user.role === 'team') {
+      joinRequestsCard.style.display = 'block';
+      renderJoinRequests(user.joinRequests);
+    } else {
+      joinRequestsCard.style.display = 'none';
+    }
+
   } catch (err){
     console.error('Failed to load profile', err);
     document.getElementById('dashboard-profile-header').innerHTML = `<p style="color:tomato">Could not load profile.</p>`;
   }
 }
 
+// Renders pending join requests for a team manager
+function renderJoinRequests(requests) {
+    const list = document.getElementById('join-requests-list');
+    const pendingRequests = (requests || []).filter(r => r.status === 'pending');
+    
+    if (pendingRequests.length === 0) {
+        list.innerHTML = `<p style="color:var(--text-secondary); margin:0; padding:10px 0;">No pending join requests.</p>`;
+        return;
+    }
+
+    list.innerHTML = pendingRequests.map(req => {
+        // Player is populated in the user object
+        const playerName = escapeHtml(req.player.name); 
+        const playerId = req.player._id;
+        
+        return `
+            <li style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.08);">
+                <a href="profile.html?id=${playerId}" style="color:var(--text-light); font-weight:600; text-decoration:none;">${playerName}</a>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-sm" style="background:var(--secondary-color); color:#000; padding:4px 8px;" 
+                            onclick="handleJoinRequest('${req._id}', 'approved')">Approve</button>
+                    <button class="btn btn-sm" style="background:none; border:1px solid tomato; color:tomato; padding:4px 8px;" 
+                            onclick="handleJoinRequest('${req._id}', 'rejected')">Reject</button>
+                </div>
+            </li>
+        `;
+    }).join('');
+}
+
+// Handles the approval/rejection of a player's request
+async function handleJoinRequest(requestId, status) {
+    try {
+        const btn = event.currentTarget;
+        btn.disabled = true;
+        
+        await apiRequest(`/api/users/manage-join-request/${requestId}`, 'PUT', { status }); // Calls backend
+        alert(`Request ${status} successfully.`);
+        
+        // Reload the profile to update the dashboard immediately
+        await loadProfile(); 
+    } catch (error) {
+        alert(`Failed to manage request: ${error.message}`);
+        // If an error occurs, the button is re-enabled to allow retry
+        const allBtns = document.querySelectorAll(`[onclick*="handleJoinRequest('${requestId}'"]`);
+        allBtns.forEach(b => b.disabled = false);
+    }
+}
+
+
 /* Followers / Following modal */
+function getActionBtn(user) {
+    if (user._id === userId) return ''; // Cannot follow yourself
+
+    const isFollowing = currentFollowingIds.includes(user._id);
+
+    if (isFollowing) {
+        return `<button class="btn btn-sm" style="background:tomato; padding:4px 10px;" 
+                        onclick="unfollowUser('${user._id}', this)">Unfollow</button>`;
+    } else {
+        return `<button class="btn btn-sm" style="background:var(--primary-blue); padding:4px 10px;" 
+                        onclick="followUser('${user._id}', this)">Follow</button>`;
+    }
+}
+
+// Renders modal with enhanced UI and action buttons
 function openFollowModal(title, users){
   document.getElementById('followModalTitle').textContent = title;
   const list = document.getElementById('followList');
+  
+  // Clear the list first
+  list.innerHTML = ''; 
+  
   if (!users || users.length === 0) {
-    list.innerHTML = `<p style="color:var(--text-secondary)">No users found.</p>`;
+    list.innerHTML = `<p style="color:var(--text-secondary); text-align: center; padding: 20px 0;">No users found.</p>`;
   } else {
-    list.innerHTML = users.map(u => `
-      <div class="fuser">
-        <img src="${u.avatar ? encodeURI(u.avatar) : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.name) + '&size=64&background=00e0ff&color=fff'}" alt="avatar">
-        <div><a href="profile.html?id=${u._id}" style="color:var(--text-light); text-decoration:none; font-weight:700">${escapeHtml(u.name)}</a></div>
-      </div>
-    `).join('');
+    // Check if the users array contains populated user objects or just IDs
+    const isPopulated = users.length > 0 && typeof users[0] === 'object' && users[0] !== null && users[0].name;
+
+    if (!isPopulated) {
+        list.innerHTML = `<p style="color:tomato; text-align: center; padding: 20px 0;">Error: User data is incomplete. Try reloading the page.</p>`;
+        // In a real app, you would fetch the user data for each ID here.
+        return; 
+    }
+
+    list.innerHTML = users.map(u => {
+        // Fallback for avatar and name
+        const userName = escapeHtml(u.name || 'Unknown User');
+        const userAvatar = u.avatar ? encodeURI(u.avatar) : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(userName) + '&size=64&background=00e0ff&color=fff';
+        
+        // This generates the visually enhanced list item
+        return `
+          <div class="fuser">
+            <div class="fuser-info">
+              <img src="${userAvatar}" alt="avatar">
+              <a class="fuser-name" href="profile.html?id=${u._id}">${userName}</a>
+            </div>
+            ${getActionBtn(u)}
+          </div>
+        `;
+    }).join('');
   }
   openModal('followModal');
 }
+
 async function showFollowers(){
   try{
-    const me = await apiRequest('/api/users/me');
+    // The /api/users/me endpoint populates 'followers' with user objects
+    const me = await apiRequest('/api/users/me'); 
     openFollowModal('Followers', me.followers || []);
-  } catch(e) { alert('Could not load followers.'); console.error(e); }
+  } catch(e) { 
+    alert('Could not load followers/following lists: ' + e.message); 
+    console.error(e); 
+  }
 }
 async function showFollowing(){
   try{
-    const me = await apiRequest('/api/users/me');
+    // The /api/users/me endpoint populates 'following' with user objects
+    const me = await apiRequest('/api/users/me'); 
     openFollowModal('Following', me.following || []);
-  } catch(e) { alert('Could not load following.'); console.error(e); }
+  } catch(e) { 
+    alert('Could not load followers/following lists: ' + e.message); 
+    console.error(e); 
+  }
 }
 function closeFollowModal(){ closeModal('followModal'); }
+
+/* follow user */
+async function followUser(uid, btn){
+  try{
+    btn.disabled = true;
+    await apiRequest(`/api/users/${uid}/follow`, 'POST'); // Calls backend
+    
+    // Update state and UI
+    if (!currentFollowingIds.includes(uid)) currentFollowingIds.push(uid);
+    btn.textContent = 'Unfollow';
+    btn.style.background = 'tomato';
+    btn.onclick = () => unfollowUser(uid, btn);
+    await loadProfile(); // Reload dashboard profile stats
+    
+  } catch (e) {
+    btn.disabled = false;
+    alert('Could not follow user: ' + e.message);
+  }
+}
+
+// FINAL CORRECTED FUNCTION: Handles unfollowing a user
+async function unfollowUser(uid, btn){
+    try {
+        btn.disabled = true;
+        // This is the call that requires the backend DELETE /api/users/:id/follow route
+        await apiRequest(`/api/users/${uid}/follow`, 'DELETE'); 
+        
+        // Update state and UI
+        currentFollowingIds = currentFollowingIds.filter(id => id !== uid);
+        btn.textContent = 'Follow';
+        btn.style.background = 'var(--primary-blue)';
+        btn.onclick = () => followUser(uid, btn);
+        
+        // Keep the modal open but update the dashboard stats
+        await loadProfile(); 
+        
+    } catch (e) {
+        btn.disabled = false;
+        alert('Could not unfollow user: ' + e.message);
+    }
+}
+
 
 /* Feed */
 async function loadFeed(){
   try{
-    const posts = await apiRequest('/api/posts/feed');
+    const posts = await apiRequest('/api/posts/feed'); 
     const feed = document.getElementById('feed');
     if (!posts || posts.length === 0) {
       feed.innerHTML = `<p style="color:var(--text-secondary)">Your feed is empty.</p>`;
@@ -374,7 +587,7 @@ async function createPostFromModal(){
   const caption = (captionEl.value || '').trim();
   if (!caption) return alert('Post cannot be empty.');
   try {
-    await apiRequest('/api/posts', 'POST', { caption });
+    await apiRequest('/api/posts', 'POST', { caption }); 
     captionEl.value = '';
     closePostModal();
     await loadFeed();
@@ -385,7 +598,7 @@ async function createPostFromModal(){
 /* Tournaments */
 async function loadTournaments(){
   try{
-    const tournaments = await apiRequest('/api/tournaments');
+    const tournaments = await apiRequest('/api/tournaments'); 
     const el = document.getElementById('tournaments-list');
     if (!tournaments || tournaments.length === 0) {
       el.innerHTML = `<p style="color:var(--text-secondary)">No tournaments available.</p>`; return;
@@ -405,7 +618,7 @@ async function loadTournaments(){
 /* Recommendations */
 async function loadRecommendations(){
   try{
-    const recs = await apiRequest('/api/users/recommendations');
+    const recs = await apiRequest('/api/users/recommendations'); 
     const el = document.getElementById('recommended-list');
     if (!recs || recs.length === 0) { el.innerHTML = `<p style="color:var(--text-secondary)">No recommendations right now.</p>`; return; }
     el.innerHTML = recs.map(u => `
@@ -420,18 +633,6 @@ async function loadRecommendations(){
   } catch (e) {
     console.error('Failed to load recommendations', e);
     document.getElementById('recommended-list').innerHTML = `<p style="color:tomato">Could not load recommendations.</p>`;
-  }
-}
-
-/* follow user */
-async function followUser(uid, btn){
-  try{
-    btn.disabled = true;
-    await apiRequest(`/api/users/${uid}/follow`, 'POST');
-    btn.textContent = 'Following';
-  } catch (e) {
-    btn.disabled = false;
-    alert('Could not follow user.');
   }
 }
 

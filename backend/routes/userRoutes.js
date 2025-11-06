@@ -299,6 +299,10 @@ router.post("/me/stats", auth, async (req, res) => {
   }
 });
 
+/* Inside your userRoutes.js file */
+
+// ... (previous routes) ...
+
 /* -----------------------------------------------------
    🔹 FOLLOW USER
 ----------------------------------------------------- */
@@ -323,6 +327,42 @@ router.post("/:id/follow", auth, async (req, res) => {
   }
 });
 
+
+/* Inside userRoutes.js (where the FOLLOW USER route is located) */
+
+/* -----------------------------------------------------
+   🔹 UNFOLLOW USER (NEW ROUTE)
+----------------------------------------------------- */
+router.delete("/:id/follow", auth, async (req, res) => {
+  try {
+    if (req.user.id === req.params.id)
+      return res.status(400).json({ message: "Cannot unfollow yourself" });
+
+    // 1. Remove the current user (me) from the target user's followers
+    const targetUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { followers: req.user.id } },
+      { new: true }
+    );
+
+    // 2. Remove the target user from the current user's following list
+    const me = await User.findByIdAndUpdate(
+      req.user.id,
+      { $pull: { following: req.params.id } },
+      { new: true }
+    );
+    
+    if (!targetUser) return res.status(404).json({ message: "User not found" });
+
+    res.json({ message: "Unfollowed successfully" });
+  } catch (err) {
+    // If an error occurs (e.g., user ID format error), respond with 500
+    res.status(500).json({ message: err.message || "Server error during unfollow" });
+  }
+});
+
+
+// ... (rest of userRoutes.js) ...
 /* -----------------------------------------------------
    🔹 GET ALL TEAMS FOR PLAYER TO JOIN
 ----------------------------------------------------- */

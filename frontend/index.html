@@ -4,43 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SportsConnect</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
   <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* Basic styling for the hero section */
-    .hero {
-      text-align: center;
-      padding: 80px 20px;
-      background: #f4f7f6;
-    }
-    .hero-title {
-      font-size: 3rem;
-      color: #007bff;
-      margin: 0;
-    }
-    .hero-subtitle span {
-      color: #0056b3;
-      font-weight: bold;
-    }
-    .feature-container {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      padding: 40px 20px;
-    }
-    .feature-card {
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center;
-      width: 300px;
-    }
-    .feature-icon {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
-    }
-  </style>
-</head>
+  <link rel="stylesheet" href="css/index.css"> </head>
 <body>
   <nav class="navbar">
     <a href="#" class="navbar-brand">SportsConnect</a>
@@ -62,13 +28,13 @@
 
   <section class="feature-container">
     <div class="feature-card">
-      <div class="feature-icon">👤</div>
+      <div class="feature-icon"><i class="fas fa-running"></i></div> 
       <h2>Player Profiles</h2>
       <p>Create comprehensive profiles with stats, achievements, and AI-powered ratings.</p>
       <button onclick="goToLogin('player')" class="btn">Enter as Player</button>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🏆</div>
+      <div class="feature-icon"><i class="fas fa-shield-alt"></i></div> 
       <h2>Team Management</h2>
       <p>Register teams, manage rosters, and showcase your club’s achievements and tournaments.</p>
       <button onclick="goToLogin('team')" class="btn">Enter as Team</button>
@@ -77,7 +43,6 @@
 
   <script>
     function goToLogin(role) {
-      // Corrected syntax using backticks for template literal
       window.location.href = `login.html?role=${role}`;
     }
   </script>

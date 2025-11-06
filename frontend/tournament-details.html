@@ -46,7 +46,6 @@
     </div>
 </div>
 
-<!-- ✅ Correct Socket.IO CDN version -->
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
     const token = localStorage.getItem("token");
@@ -57,13 +56,15 @@
         window.location.href = "index.html";
     }
 
+    // ✅ FIXED apiRequest: Logs detailed error from server
     async function apiRequest(url, options = {}) {
         const res = await fetch(`http://localhost:5000${url}`, {
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, ...options
         });
         if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.message);
+            const err = await res.json().catch(() => ({ message: `HTTP Error ${res.status}` }));
+            console.error("API Request Failed:", url, err); // Log the failure details
+            throw new Error(err.message || 'API request failed');
         }
         return res.json();
     }
@@ -72,10 +73,9 @@
         const urlParams = new URLSearchParams(window.location.search);
         const tournamentId = urlParams.get('id');
 
-        // FIX: Check if tournamentId is null before making API call
         if (!tournamentId || tournamentId === 'null') {
             alert('Error: Tournament ID is missing from the URL.');
-            window.location.href = 'dashboard.html'; // Redirect to a safe page
+            window.location.href = 'dashboard.html';
             return;
         }
 
@@ -85,13 +85,11 @@
                 apiRequest('/api/users/me')
             ]);
             
-            document.getElementById('tournament-name').textContent = tournamentData.name;
+            // ✅ FIX: Use optional chaining for robustness
+            document.getElementById('tournament-name').textContent = tournamentData.name || 'Tournament Details';
             
-            if (tournamentData.organizer) {
-                document.getElementById('tournament-organizer').textContent = tournamentData.organizer.name;
-            } else {
-                document.getElementById('tournament-organizer').textContent = 'N/A';
-            }
+            const organizerName = tournamentData.organizer?.name || 'N/A';
+            document.getElementById('tournament-organizer').textContent = organizerName;
 
             renderTeamLists(tournamentData.teams);
             renderMatches(tournamentData.matches, currentUser, tournamentData);
@@ -103,11 +101,9 @@
                 } else if (currentUser.role === 'team') {
                     renderRegistrationButton(tournamentData.teams, currentUser);
                 }
-            } else {
-                 console.error('Organizer or currentUser data is missing.');
             }
             
-            // Connect to WebSocket and join the match room
+            // Socket.IO connection
             const socket = io();
             socket.on("connect", () => {
                 socket.emit("join_match_room", tournamentId);
@@ -120,21 +116,28 @@
 
 
         } catch (error) {
-            alert(`Error loading page: ${error.message}`);
+            // Display the specific error message from the API or the default failure message
+            alert(`Error loading page: ${error.message || 'Failed to fetch tournament data.'}`);
+            console.error(`Page Load Failure:`, error);
         }
     }
 
+    // ✅ FIXED: renderTeamLists (Added null checks for team/team.name)
     function renderTeamLists(teams) {
         const approvedList = document.getElementById('approved-teams');
         const pendingList = document.getElementById('pending-teams');
 
-        const approvedTeams = teams.filter(t => t.status === 'approved');
-        const pendingTeams = teams.filter(t => t.status === 'pending');
+        // Filter for teams where the 'team' object is successfully populated
+        const approvedTeams = teams.filter(t => t.status === 'approved' && t.team && t.team.name);
+        const pendingTeams = teams.filter(t => t.status === 'pending' && t.team && t.team.name);
 
-        approvedList.innerHTML = approvedTeams.length > 0 ? approvedTeams.map(t => `<li>${t.team.name}</li>`).join('') : "<li><p>No teams approved yet.</p></li>";
+        approvedList.innerHTML = approvedTeams.length > 0 
+            ? approvedTeams.map(t => `<li>${t.team.name}</li>`).join('') 
+            : "<li><p>No teams approved yet.</p></li>";
         
         if (pendingList) {
-            pendingList.innerHTML = pendingTeams.length > 0 ? pendingTeams.map(reg => `
+            pendingList.innerHTML = pendingTeams.length > 0 
+                ? pendingTeams.map(reg => `
                 <li class="pending-item">
                     <span>${reg.team.name}</span>
                     <div class="actions">
@@ -148,23 +151,29 @@
 
     function renderRegistrationButton(teams, currentUser) {
         const registrationDiv = document.getElementById('registration-status');
-        const myRegistration = teams.find(t => t.team._id === currentUser._id);
+        // Find registration using the populated team._id
+        const myRegistration = teams.find(t => t.team?._id === currentUser._id);
 
         if (myRegistration) {
             let statusText = '';
+            let statusClass = '';
             if (myRegistration.status === 'pending') {
                 statusText = 'Your request is in the waiting list.';
+                statusClass = 'status-pending';
             } else if (myRegistration.status === 'approved') {
                 statusText = 'You have been approved to join this tournament!';
+                statusClass = 'status-approved';
             } else if (myRegistration.status === 'rejected') {
                 statusText = 'Your request was rejected.';
+                statusClass = 'status-rejected';
             }
-            registrationDiv.innerHTML = `<p class="status-message status-${myRegistration.status}">${statusText}</p>`;
+            registrationDiv.innerHTML = `<p class="status-message ${statusClass}">${statusText}</p>`;
         } else {
             registrationDiv.innerHTML = `<button class="btn register-btn" onclick="registerForTournament()">Register Your Team</button>`;
         }
     }
     
+    // ✅ FIXED: renderMatches (Added null checks for team/team.name)
     function renderMatches(matches, currentUser, tournamentData) {
         const matchesContainer = document.getElementById('matches-list-container');
         if (!matches || matches.length === 0) {
@@ -174,22 +183,28 @@
         
         const isOrganizer = currentUser && tournamentData.organizer && currentUser._id === tournamentData.organizer._id;
 
-        const matchesHTML = matches.map(match => `
+        const matchesHTML = matches.map(match => {
+            // Use optional chaining for match.teams elements
+            const validTeams = match.teams.filter(t => t && t.name);
+            const teamNames = validTeams.map(t => t.name).join(' vs ');
+
+            return `
             <div class="match-item">
                 <div class="match-details">
                     <p><strong>Match:</strong> ${match.matchName}</p>
                     <p><strong>Date:</strong> ${new Date(match.date).toLocaleDateString()}</p>
                     <p><strong>Location:</strong> ${match.location}</p>
-                    <p><strong>Teams:</strong> ${match.teams.map(t => t.name).join(' vs ')}</p>
+                    <p><strong>Teams:</strong> ${teamNames || 'TBD'}</p>
                     <p><strong>Status:</strong> ${match.status}</p>
                     ${match.scorecard ? renderFullScorecard(match.scorecard, tournamentData.sport) : ''}
                 </div>
                 ${isOrganizer ? 
-                    `<button class="btn update-score-btn" onclick="openUpdateScorecardPage('${match._id}', '${tournamentData.sport}', '${match.teams.map(t => t.name).join(',')}')">Update Score</button>` 
+                    `<button class="btn update-score-btn" onclick="openUpdateScorecardPage('${match._id}', '${tournamentData.sport}', '${teamNames}')">Update Score</button>` 
                     : ''
                 }
             </div>
-        `).join('');
+            `;
+        }).join('');
 
         matchesContainer.innerHTML = matchesHTML;
     }
@@ -202,26 +217,29 @@
         const team1 = scorecard.team1;
         const team2 = scorecard.team2;
         
+        const team1Name = team1.team?.name || team1.name || 'Team 1';
+        const team2Name = team2.team?.name || team2.name || 'Team 2';
+
         if (sport === 'Cricket') {
             scorecardHtml += `
                 <div class="scorecard-section">
-                    <h4>${team1.name}</h4>
-                    <p>Score: ${team1.runs}/${team1.wickets} in ${team1.overs} overs</p>
+                    <h4>${team1Name}</h4>
+                    <p>Score: ${team1.score} in ${team1.overs} overs</p>
                 </div>
                 <div class="scorecard-section">
-                    <h4>${team2.name}</h4>
-                    <p>Score: ${team2.runs}/${team2.wickets} in ${team2.overs} overs</p>
+                    <h4>${team2Name}</h4>
+                    <p>Score: ${team2.score} in ${team2.overs} overs</p>
                 </div>
             `;
         } else if (sport === 'Football') {
              scorecardHtml += `
                 <div class="scorecard-section">
-                    <h4>${team1.name}</h4>
-                    <p>Goals: ${team1.goals}</p>
+                    <h4>${team1Name}</h4>
+                    <p>Goals: ${team1.score}</p>
                 </div>
                 <div class="scorecard-section">
-                    <h4>${team2.name}</h4>
-                    <p>Goals: ${team2.goals}</p>
+                    <h4>${team2Name}</h4>
+                    <p>Goals: ${team2.score}</p>
                 </div>
             `;
         }
@@ -241,7 +259,7 @@
         const tournamentId = urlParams.get('id');
 
         try {
-            const result = await apiRequest(`/api/tournaments/${tournamentId}/register`, { method: 'POST' });
+            const result = await apiRequest(`/api/tournaments/${tournamentId}/register`, { method: 'POST' }); // Calls backend
             alert(result.message);
             loadPage();
         } catch(error) { alert(`Error: ${error.message}`); }
@@ -252,7 +270,7 @@
         const tournamentId = urlParams.get('id');
 
         try {
-            await apiRequest(`/api/tournaments/${tournamentId}/registrations/${teamId}`, { method: 'PUT', body: JSON.stringify({ status }) });
+            await apiRequest(`/api/tournaments/${tournamentId}/registrations/${teamId}`, { method: 'PUT', body: JSON.stringify({ status }) }); // Calls backend
             alert(`Request ${status} successfully.`);
             loadPage();
         } catch(error) { alert(`Error: ${error.message}`); }

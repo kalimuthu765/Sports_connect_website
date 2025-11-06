@@ -41,6 +41,10 @@ router.get("/:id", auth, async (req, res) => {
     if (!tournament) return res.status(404).json({ message: "Tournament not found" });
     res.json(tournament);
   } catch (err) {
+    // ✅ FIX: Check for Mongoose CastError (Invalid ID format)
+    if (err.kind === 'ObjectId') {
+        return res.status(404).json({ message: "Tournament not found (Invalid ID format)" });
+    }
     res.status(500).json({ message: err.message });
   }
 });

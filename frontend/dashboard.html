@@ -220,11 +220,20 @@ main{ flex:2 } aside{ flex:1; display:flex; flex-direction:column; gap:22px; }
 
   <aside>
     <div class="card">
-      <h3><i class="fas fa-medal"></i> Live Tournaments</h3>
-      <ul id="tournaments-list" class="item-list">
-        <p style="color:var(--text-secondary); margin:0;">Loading tournaments...</p>
-      </ul>
-    </div>
+  <h3><i class="fas fa-medal"></i> Live Tournaments</h3>
+
+  <!-- 🔹 Added Create Tournament Button -->
+  <button class="btn btn-sm" style="width:100%; margin-bottom:10px;"
+          onclick="openCreateTournament()">
+    <i class="fas fa-plus-circle"></i> Create Tournament
+  </button>
+  <!-- 🔹 End of Addition -->
+
+  <ul id="tournaments-list" class="item-list">
+    <p style="color:var(--text-secondary); margin:0;">Loading tournaments...</p>
+  </ul>
+</div>
+
 
     <div class="card">
       <h3><i class="fas fa-handshake"></i> Recommended</h3>
@@ -441,6 +450,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   loadTournaments();
   loadRecommendations();
 });
+function openCreateTournament(){
+  window.location.href = "create-tournament.html";
+}
+
 </script>
 </body>
 </html>

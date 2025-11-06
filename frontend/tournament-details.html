@@ -46,7 +46,8 @@
     </div>
 </div>
 
-<script src="/socket.io/socket.io.js"></script>
+<!-- ✅ Correct Socket.IO CDN version -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
     const token = localStorage.getItem("token");
     if (!token) window.location.href = "login.html";

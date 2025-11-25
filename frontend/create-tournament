@@ -1,6 +1,0 @@
-        stats: {
-            'Batter': ['Runs', 'Balls Faced', '4s', '6s','Catches','Run Outs'],
-            'Bowler': ['Wickets', 'Overs', 'Maidens', 'Runs Conceded','Catches','Run Outs'],
-            'All-rounder': ['Runs','Balls Faced', '4s', '6s', 'Wickets','Overs', 'Maidens', 'Runs Conceded', 'Catches','Run Outs'],
-            'Wicket-keeper': ['Runs','Balls Faced', '4s', '6s','Catches', 'Stumpings', 'Run Outs']
-        }
